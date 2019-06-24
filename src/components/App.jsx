@@ -12,14 +12,32 @@ class App extends Component {
     }
 
     handleClick(key) {
+        let str = '';
+        switch (key.type) {
+            case 'digit':
+               str = 'digit';
+               break;
+            case 'operator':
+               str = 'operator';
+               break;
+            case 'special':
+                str = 'special';
+                break;
+            case 'service':
+                str = 'service';
+                break;
+            default:
+                str = 'some code';
+                break;
+        }
+        console.log('result: ', str);
+
         const pressedKey = { ...key };
         this.setState({ pressedKey });
         console.log('this.state', this.state.pressedKey);
     }
 
     render() {
-        // const displayKey = this.state.pressedKey;
-        // console.log('displayKey', displayKey.text);
         return (
             //
             <div>
