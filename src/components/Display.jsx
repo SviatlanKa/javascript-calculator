@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 
 class Display extends Component {
     render() {
-        console.log(this.props.displayKey);
         return(
-            <div id="display">{this.props.expression}</div>
+            <div id="display">
+                <p>{this.props.expression}</p>
+                <p>{this.props.result}</p>
+            </div>
         )
     }
 }
