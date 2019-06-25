@@ -4,7 +4,7 @@ class Display extends Component {
     render() {
         console.log(this.props.displayKey);
         return(
-            <div id="display">{this.props.displayKey}</div>
+            <div id="display">{this.props.expression}</div>
         )
     }
 }
