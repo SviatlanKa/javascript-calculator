@@ -110,6 +110,20 @@ class App extends Component {
                 default:
                     break;
             }
+        } else if (key.type === 'special') {
+            switch (key.id) {
+                case 'decimal':
+                    break;
+                case 'percent':
+                    break;
+                case 'radial':
+                    break;
+                case 'left-parenthesis':
+                case 'right-parenthesis':
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
