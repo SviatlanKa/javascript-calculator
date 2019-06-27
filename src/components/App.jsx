@@ -7,7 +7,6 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            pressedKey: {},
             expression: [],
             result: ['0'],
             isEqual: false
@@ -25,35 +24,33 @@ class App extends Component {
 
     lastChar = (arrOfChars) => arrOfChars.slice((-1))[0];
 
-    lastNumber = (arrOfChars) => arrOfChars.join('').match(/\d+$/).split('');
+    lastNumber = (arrOfChars) => arrOfChars.join('').match(/\d+$/);
 
     addDigit(key) { //It works correct!!
-        let { expression } = this.state;
-        if (this.state.isEqual) {
+        let { expression, isEqual } = this.state;
+        if (isEqual) {
             expression = [];
-            this.setState({ isEqual: false });
+            isEqual = !isEqual;
         }
-        let pressedKey = {...key};
         expression.push(key.text);
-        const result = this.lastNumber(expression);
+        const result = this.lastNumber(expression)[0].split('');
         console.log(result);
-        this.setState({ pressedKey, expression, result });
+        this.setState({ expression, result, isEqual });
         console.log('this.state from addDigit', this.state);
     }
 
     addOperator(key) { //It works correct!!
         let expression = [];
-        let result = this.state.result;
-        if (this.state.isEqual) {
-            if (result.length > 1) expression = this.state.result.split('');
+        let { result,isEqual } = this.state;
+        if (isEqual) {
+            if (result.length > 1) expression = result;
             else expression[0] = result;
-            this.setState({ isEqual: false });
+            isEqual = !isEqual;
         } else expression = this.state.expression;
-        let pressedKey = {...key};
         console.log('expression', expression);
         expression.push(key.text);
         result = key.text;
-        this.setState({ pressedKey, expression, result });
+        this.setState({ expression, result, isEqual });
         console.log('this.state from addOperator', this.state);
     }
 
@@ -61,11 +58,8 @@ class App extends Component {
         let { expression, result, isEqual } = this.state;
         const number = this.lastNumber(expression)[0];
         const index = this.lastNumber(expression).index;
-        if (isEqual) {
-            result = result.split('');
-            result.splice(0, 0, '-');
-            result = result.join('');
-        } else expression.splice(index, number, `(-${number})`);
+        if (isEqual) result.splice(0, 0, '-');
+        else expression.splice(index, number, `(-${number})`);
         console.log(expression);
         this.setState({ expression, result });
     }
@@ -73,8 +67,7 @@ class App extends Component {
     deleteChar() { //It works correct!!
         const { expression } = this.state;
         expression.pop();
-        let pressedKey = this.props.data.filter(char => char.text === this.lastChar(expression));
-        this.setState({ pressedKey, expression, result: expression });
+        this.setState({ expression, result: '' });
         console.log('this.state from deleteChar', this.state);
     }
 
@@ -90,15 +83,15 @@ class App extends Component {
 
     calculate() { //It works correct!!
         const { expression } = this.state;
-
-        const result = eval(expression.join('')).toString();
+        const result = eval(expression.join('')).toString().split('');
         const isEqual = true;
         this.setState({ expression, result, isEqual });
         console.log('this.state from calculate', this.state);
     }
 
     handleClick(key) {
-        const expressionLength = this.state.expression.length;
+        const { expression } = this.state;
+        const expressionLength = expression.length;
         console.log('key ', key);
         if (key.type === 'digit') {
             if (expressionLength === 0) {
@@ -109,7 +102,7 @@ class App extends Component {
             if (expressionLength === 0) {
                 alert('wrong expression');
                 key = null;
-            } else if (/[+-/*]$/.test(this.lastChar(this.state.expression))) {
+            } else if (/[+-/*]$/.test(this.lastChar(expression))) {
                 this.deleteChar();
             }
             if (key !== null) {

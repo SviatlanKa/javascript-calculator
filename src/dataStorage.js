@@ -11,7 +11,7 @@ export const CALC_PADS = [
     },
     {
         id: "number-sign",
-        text: "",
+        text: "+-",
         type: "special"
     },
     {
@@ -21,7 +21,7 @@ export const CALC_PADS = [
     },
     {
         id: "backspace",
-        text: "",
+        text: "<=",
         type: "service"
     },
     {
@@ -46,7 +46,7 @@ export const CALC_PADS = [
     },
     {
         id: "power",
-        text: "",
+        text: "P",
         type: "operator"
     },
     {
@@ -71,7 +71,7 @@ export const CALC_PADS = [
     },
     {
         id: "radical",
-        text: "",
+        text: "R",
         type: "operator"
     },
     {
