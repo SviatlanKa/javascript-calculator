@@ -9,7 +9,7 @@ class App extends Component {
         this.state = {
             pressedKey: {},
             expression: [],
-            result: '',
+            result: ['0'],
             isEqual: false
         }
         this.handleClick = this.handleClick.bind(this);
@@ -18,7 +18,14 @@ class App extends Component {
         this.deleteChar = this.deleteChar.bind(this);
         this.clearAll = this.clearAll.bind(this);
         this.calculate = this.calculate.bind(this);
+        this.addSign = this.addSign.bind(this);
+        this.lastChar = this.lastChar.bind(this);
+        this.lastNumber = this.lastNumber.bind(this);
     }
+
+    lastChar = (arrOfChars) => arrOfChars.slice((-1))[0];
+
+    lastNumber = (arrOfChars) => arrOfChars.join('').match(/\d+$/).split('');
 
     addDigit(key) { //It works correct!!
         let { expression } = this.state;
@@ -28,7 +35,7 @@ class App extends Component {
         }
         let pressedKey = {...key};
         expression.push(key.text);
-        const result = expression.join('').match(/\d+$/)[0];
+        const result = this.lastNumber(expression);
         console.log(result);
         this.setState({ pressedKey, expression, result });
         console.log('this.state from addDigit', this.state);
@@ -50,12 +57,23 @@ class App extends Component {
         console.log('this.state from addOperator', this.state);
     }
 
+    addSign() {
+        let { expression, result, isEqual } = this.state;
+        const number = this.lastNumber(expression)[0];
+        const index = this.lastNumber(expression).index;
+        if (isEqual) {
+            result = result.split('');
+            result.splice(0, 0, '-');
+            result = result.join('');
+        } else expression.splice(index, number, `(-${number})`);
+        console.log(expression);
+        this.setState({ expression, result });
+    }
+
     deleteChar() { //It works correct!!
         const { expression } = this.state;
         expression.pop();
-        const lastChar = expression.slice(-1)[0];
-        console.log('lastChar', lastChar);
-        let pressedKey = this.props.data.filter(char => char.text === lastChar);
+        let pressedKey = this.props.data.filter(char => char.text === this.lastChar(expression));
         this.setState({ pressedKey, expression, result: expression });
         console.log('this.state from deleteChar', this.state);
     }
@@ -64,7 +82,7 @@ class App extends Component {
         this.setState({
             pressedKey: {},
             expression: [],
-            result: '',
+            result: '0',
             isEqual: false
         });
         console.log('this.state from clearAll', this.state);
@@ -72,7 +90,8 @@ class App extends Component {
 
     calculate() { //It works correct!!
         const { expression } = this.state;
-        const result = eval(expression.join(''));
+
+        const result = eval(expression.join('')).toString();
         const isEqual = true;
         this.setState({ expression, result, isEqual });
         console.log('this.state from calculate', this.state);
@@ -90,7 +109,7 @@ class App extends Component {
             if (expressionLength === 0) {
                 alert('wrong expression');
                 key = null;
-            } else if (/[+-/*]/.test(this.state.expression.slice(-1)[0])) {
+            } else if (/[+-/*]$/.test(this.lastChar(this.state.expression))) {
                 this.deleteChar();
             }
             if (key !== null) {
@@ -112,6 +131,9 @@ class App extends Component {
             }
         } else if (key.type === 'special') {
             switch (key.id) {
+                case 'number-sign':
+                    this.addSign();
+                    break;
                 case 'decimal':
                     break;
                 case 'percent':
