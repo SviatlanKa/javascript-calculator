@@ -47,7 +47,7 @@ export const CALC_PADS = [
     {
         id: "power",
         text: "P",
-        type: "operator"
+        type: "special"
     },
     {
         id: "for",
@@ -72,7 +72,7 @@ export const CALC_PADS = [
     {
         id: "radical",
         text: "R",
-        type: "operator"
+        type: "special"
     },
     {
         id: "one",
