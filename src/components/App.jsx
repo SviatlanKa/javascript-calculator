@@ -115,21 +115,34 @@ class App extends Component {
     }
 
     calculate() { //It works correct!!
-        const { expression } = this.state;
-        const regExp = /^.+%/;
-        if (regExp.test(expression)) {
-            const firstPartWithPercent = expression.join('').match(regExp)[0];
-            console.log(firstPartWithPercent);
-            const firstPartWithPercentResult = eval(firstPartWithPercent);
-            console.log(firstPartWithPercent);//Math.round(eval(firstPartWithPercent) * Math.pow(10, 10)) / Math.pow(10, 10);
-            expression.splice(0, firstPartWithPercent.length, firstPartWithPercentResult.split(''));
+        let { expression } = this.state;
+        var str = "36-26, 18-9"
+        str = str.replace(/(\d+)-(\d+)/g, (a,b,c) => b - c)
+        alert(str)
+        expression.join('').replace(/(\d+^%)\*(\d+^%)/, (a, b, c) => b * c);
+        expression.join('').replace(/(\d+^%)\/(\d+^%)/, (a, b, c) => b / c);
+        let result = expression.join('');
+        console.log('result string: ', result);
+        console.log(typeof(result));
+        result = result.replace(/(\d+)\+(\d+)/g, (a,b,c) => {
+            let result1 = 0;
+            result1 = parseFloat(b) + parseFloat(c);
+            return result1;
+        });
+        console.log('result: ', result);
+        // expression = expression.join('').replace(/(\d+^%)\+(\d+^%)/, (a, b, c) => b + c).split('');
+        // console.log(expression);
+        expression.join('').replace(/(\d+^%)-(\d+^%)/, (a, b, c) => b - c);
+        if (/^.+%/.test(expression)) {
+
             console.log(expression);
         }
-        const resultInNum = Math.round(eval(expression.join('')) * Math.pow(10, 10))
-            / Math.pow(10, 10);
-        const result = resultInNum.toString().split('');
+        // const resultInNum = Math.round(eval(expression.join('')) * Math.pow(10, 10))
+        //     / Math.pow(10, 10);
+        // const result = resultInNum.toString().split('');
         const isEqual = true;
-        this.setState({ expression, result, isEqual });
+        // this.setState({ expression, result, isEqual });
+        this.setState({expression, isEqual});
         console.log('this.state from calculate', this.state);
     }
 
