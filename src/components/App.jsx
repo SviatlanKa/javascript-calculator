@@ -116,14 +116,13 @@ class App extends Component {
 
     calculate() { //It works correct!!
         const { expression } = this.state;
-        const regExp = /^.+%/;
-        if (regExp.test(expression)) {
-            const firstPartWithPercent = expression.join('').match(regExp)[0];
-            console.log(firstPartWithPercent);
-            const firstPartWithPercentResult = eval(firstPartWithPercent);
-            console.log(firstPartWithPercent);//Math.round(eval(firstPartWithPercent) * Math.pow(10, 10)) / Math.pow(10, 10);
-            expression.splice(0, firstPartWithPercent.length, firstPartWithPercentResult.split(''));
-            console.log(expression);
+        if (/^.+%/.test(expression)) {
+            const percent = expression.join('').match(/^.+%/)[0];
+            console.log(percent);
+            // const firstPartWithPercentResult = eval(firstPartWithPercent);
+            // console.log(firstPartWithPercent);//Math.round(eval(firstPartWithPercent) * Math.pow(10, 10)) / Math.pow(10, 10);
+            // expression.splice(0, firstPartWithPercent.length, firstPartWithPercentResult.split(''));
+            // console.log(expression);
         }
         const resultInNum = Math.round(eval(expression.join('')) * Math.pow(10, 10))
             / Math.pow(10, 10);
