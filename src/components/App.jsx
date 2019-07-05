@@ -80,8 +80,7 @@ class App extends Component {
     addPercent() {
         let { expression, result, isEqual } = this.state;
         if (expression.length > 0) {
-            const lastChar = this.lastChar(expression);
-            if (!/[+-/*\.%]$/.test(lastChar)) {
+            if (/([\+-\/\*\.]$)|(^\d+)/.test(expression) !== true) {
                 expression.push('%');
                 result = '%';
             } else alert('Wrong expression');
@@ -116,26 +115,17 @@ class App extends Component {
 
     calculate() { //It works correct!!
         let { expression } = this.state;
-        var str = "36-26, 18-9"
-        str = str.replace(/(\d+)-(\d+)/g, (a,b,c) => b - c)
-        alert(str)
-        expression.join('').replace(/(\d+^%)\*(\d+^%)/, (a, b, c) => b * c);
-        expression.join('').replace(/(\d+^%)\/(\d+^%)/, (a, b, c) => b / c);
-        let result = expression.join('');
-        console.log('result string: ', result);
-        console.log(typeof(result));
-        result = result.replace(/(\d+)\+(\d+)/g, (a,b,c) => {
-            let result1 = 0;
-            result1 = parseFloat(b) + parseFloat(c);
-            return result1;
-        });
-        console.log('result: ', result);
-        // expression = expression.join('').replace(/(\d+^%)\+(\d+^%)/, (a, b, c) => b + c).split('');
-        // console.log(expression);
-        expression.join('').replace(/(\d+^%)-(\d+^%)/, (a, b, c) => b - c);
+        // expression = expression.join('').replace(/(\d+.?\d*)\*(\d+.?\d*)/, (a, b, c) => b * c).split('');
+        // expression = expression.join('').replace(/(\d+.?\d*)\/(\d+.?\d*)/, (a, b, c) => b / c).split('');
+        // expression = expression.join('').replace(/(\d+.?\d*)\+(\d+.?\d*)/, (a, b, c) =>
+        //     Math.round((parseFloat(b) + parseFloat(c)) * Math.pow(10, 10))
+        //     / Math.pow(10, 10)).split('');
+        //
+        // // expression = expression.join('').replace(/(\d+^%)\+(\d+^%)/, (a, b, c) => b + c).split('');
+        // // console.log(expression);
+        // expression = expression.join('').replace(/(\d+.?\d*)-(\d+.?\d*)/, (a, b, c) => b - c).split('');
         if (/^.+%/.test(expression)) {
-
-            console.log(expression);
+          console.log('there is percent');
         }
         // const resultInNum = Math.round(eval(expression.join('')) * Math.pow(10, 10))
         //     / Math.pow(10, 10);
