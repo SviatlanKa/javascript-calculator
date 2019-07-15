@@ -80,7 +80,7 @@ class App extends Component {
     addPercent() {
         let { expression, result, isEqual } = this.state;
         if (expression.length > 0) {
-            if (/([\+-\/\*\.]$)|(^\d+)/.test(expression) !== true) {
+            if (/([-\+\/\*\.]$)|(^\d+$)/.test(expression.join('')) !== true) {
                 expression.push('%');
                 result = '%';
             } else alert('Wrong expression');
@@ -115,7 +115,15 @@ class App extends Component {
 
     calculate() { //It works correct!!
         let { expression } = this.state;
-        // expression = expression.join('').replace(/(\d+.?\d*)\*(\d+.?\d*)/, (a, b, c) => b * c).split('');
+        let expressionToString = expression.join('');
+        console.log(expressionToString);
+        //console.log(expressionToString.match(/(\d+\.?\d*)\*(\d+\.?\d*)/g));
+        //first match /|*, then replace this expression with function: if * else
+        //OR eval this expression then replace expression on calculate expression
+        while(/(\d+\.?\d*)\*(\d+\.?\d*)/.exec(expressionToString)){
+            expressionToString = expressionToString.replace(/(\d+\.?\d*)\*(\d+\.?\d*)/, (a, b, c) => b * c);
+            console.log('replace * result: ', expressionToString);
+        }
         // expression = expression.join('').replace(/(\d+.?\d*)\/(\d+.?\d*)/, (a, b, c) => b / c).split('');
         // expression = expression.join('').replace(/(\d+.?\d*)\+(\d+.?\d*)/, (a, b, c) =>
         //     Math.round((parseFloat(b) + parseFloat(c)) * Math.pow(10, 10))
