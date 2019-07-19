@@ -116,14 +116,30 @@ class App extends Component {
     calculate() { //It works correct!!
         let { expression } = this.state;
         let expressionToString = expression.join('');
+        let mathOperators = ['\/', '\*', '-', '\+'];
         console.log(expressionToString);
-        //console.log(expressionToString.match(/(\d+\.?\d*)\*(\d+\.?\d*)/g));
-        //first match /|*, then replace this expression with function: if * else
-        //OR eval this expression then replace expression on calculate expression
-        while(/(\d+\.?\d*)\*(\d+\.?\d*)/.exec(expressionToString)){
-            expressionToString = expressionToString.replace(/(\d+\.?\d*)\*(\d+\.?\d*)/, (a, b, c) => b * c);
-            console.log('replace * result: ', expressionToString);
-        }
+
+        mathOperators.forEach(elem => {
+            let regExp = new RegExp("/([\/\*-\+]?-?\d+\.?\d*)" + elem + "(-?\d+\.?\d*)/");
+            while(regExp.exec(expressionToString)){
+                expressionToString = expressionToString.replace(regExp, (a, b, c) => {
+                    console.log(a, b, c);
+                    console.log(`a: ${a}, b: ${b}, c: ${c}`);
+                });
+            }
+        })
+
+        // console.log('/', expressionToString);
+        // while(/(\d+\.?\d*)\*(\d+\.?\d*)/.exec(expressionToString)){
+        //     expressionToString = expressionToString.replace(/(\d+\.?\d*)\*(\d+\.?\d*)/, (a, b, c) => b * c);
+        // }
+        //
+        // while(/(\d+\.?\d*)\+(\d+\.?\d*)/.exec(expressionToString)){
+        //     expressionToString = expressionToString.replace(/(\d+\.?\d*)\+(\d+\.?\d*)/, (a, b, c) =>
+        //         Math.round((parseFloat(b) + parseFloat(c)) * Math.pow(10, 10)) / Math.pow(10, 10));
+        // }
+        // console.log(expressionToString);
+
         // expression = expression.join('').replace(/(\d+.?\d*)\/(\d+.?\d*)/, (a, b, c) => b / c).split('');
         // expression = expression.join('').replace(/(\d+.?\d*)\+(\d+.?\d*)/, (a, b, c) =>
         //     Math.round((parseFloat(b) + parseFloat(c)) * Math.pow(10, 10))
