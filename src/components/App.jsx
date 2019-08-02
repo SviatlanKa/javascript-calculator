@@ -45,7 +45,7 @@ class App extends Component {
     addOperator(key) {//It works correct!!
         let { expression, result, isEqual } = this.state;
         if (isEqual) {
-            expression = result.split('');
+            expression = result;
             isEqual = !isEqual;
         }
         if (expression.length === 0) alert('Wrong expression');
@@ -88,15 +88,17 @@ class App extends Component {
         this.setState( {expression, result, isEqual });
     }
 
-    addSign() {
+    addSign() {//--78 should convert to 78 - it doesn't work
         let { expression, result, isEqual } = this.state;
-        const index = this.lastNumber(expression).index;
-        console.log(`lastNumber: ${this.lastNumber(expression)}`);
-        console.log(`index: ${index}`);
-        if (isEqual) {
-            result.splice(0, 0, '-');
-            isEqual = !isEqual;
-        } else expression.splice(index, 0, '-');
+        if (expression.length !== 0) {
+            const index = this.lastNumber(expression).index;
+            if (isEqual) {
+                result.splice(0, 0, '-');
+                isEqual = !isEqual;
+            } else if (expression[index - 1] === '-' & ) {// it doesn't finish (*-- == *)
+                expression.splice(index, 0, '-');
+            }
+        }
         this.setState({ expression, result, isEqual });
     }
 
@@ -119,62 +121,50 @@ class App extends Component {
         let { expression } = this.state;
         let expressionToString = expression.join('');
         let mathOperators = ["\\/", "\\*", "-", "\\+"];
-
-        mathOperators.forEach(elem => { //what's going wrong?
-            let regExp ='';
-            if(/([-\+\/\*]-\d+\.?\d*)[-\+\/\*](\d+\.?\d*)/ || /^-/.test(expressionToString)) {
-                regExp = new RegExp(`(-\\d+\\.?\\d*)${elem}(\\d+\\.?\\d*)`);
-                console.log(`expression1: ${expression}`);
-                console.log(`regExp: ${regExp}`);
-            } else if (/([-\+\/\*]\d+\.?\d*)[-\+\/\*](-\d+\.?\d*)/) {
-                regExp = new RegExp(`(\\d+\\.?\\d*)${elem}(-\\d+\\.?\\d*)`);
-                console.log(`expression2: ${expression}`);
-                console.log(`regExp: ${regExp}`);
-            } else regExp = new RegExp(`(\\d+\\.?\\d*)${elem}(\\d+\\.?\\d*)`);
-            console.log(`regExp: ${regExp}`);
-            let flag = regExp.exec(expressionToString);
-            console.log(flag);
+        const replacer = (regExp, operator) => {
             while(regExp.exec(expressionToString)){
                 expressionToString = expressionToString.replace(regExp, (a, b, c) => {
-                    switch (elem) {
+                    switch (operator) {
                         case '\\/':
+                            console.log('\\', Math.round(b / c * Math.pow(10, 10)) / Math.pow(10, 10));
                             return Math.round(b / c * Math.pow(10, 10)) / Math.pow(10, 10);
                         case '\\*':
+                            console.log('*', Math.round(b * c * Math.pow(10, 10)) / Math.pow(10, 10));
                             return Math.round(b * c * Math.pow(10, 10)) / Math.pow(10, 10)
                         case '-':
+                            console.log('-', Math.round((b - c) * Math.pow(10, 10)) / Math.pow(10, 10));
                             return Math.round((b - c) * Math.pow(10, 10)) / Math.pow(10, 10);
                         case '\\+':
+                            console.log('+', Math.round((parseFloat(b) + parseFloat(c)) * Math.pow(10, 10))
+                                / Math.pow(10, 10));
                             return Math.round((parseFloat(b) + parseFloat(c)) * Math.pow(10, 10))
-                            / Math.pow(10, 10);
+                                / Math.pow(10, 10);
                         default:
                             break;
                     }
                 });
             }
-        })
-        const result = expressionToString;
+        }
+
+        mathOperators.forEach(elem => {
+            let regExp = new RegExp(`(([-\\+\\/\\*]-|^-)\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
+            console.log(elem, expressionToString);
+            //next if is wrong!!! -117-45/9+63*5-400 == -59*5 - 400
+            if (regExp.test(expressionToString)) {
+                regExp = new RegExp(`(-\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
+                replacer(regExp, elem);
+            }
+            regExp = new RegExp(`(\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
+            if (regExp.test(expressionToString)) {
+                replacer(regExp, elem);
+            }
+            console.log('expressionToString: ', expressionToString);
+
+        });
         expression = expressionToString.split('');
+        const result = expression;
         console.log(`expression: ${expression}, result: ${result}`);
 
-        // console.log('/', expressionToString);
-        // while(/(\d+\.?\d*)\*(\d+\.?\d*)/.exec(expressionToString)){
-        //     expressionToString = expressionToString.replace(/(\d+\.?\d*)\*(\d+\.?\d*)/, (a, b, c) => b * c);
-        // }
-        //
-        // while(/(\d+\.?\d*)\+(\d+\.?\d*)/.exec(expressionToString)){
-        //     expressionToString = expressionToString.replace(/(\d+\.?\d*)\+(\d+\.?\d*)/, (a, b, c) =>
-        //         Math.round((parseFloat(b) + parseFloat(c)) * Math.pow(10, 10)) / Math.pow(10, 10));
-        // }
-        // console.log(expressionToString);
-
-        // expression = expression.join('').replace(/(\d+.?\d*)\/(\d+.?\d*)/, (a, b, c) => b / c).split('');
-        // expression = expression.join('').replace(/(\d+.?\d*)\+(\d+.?\d*)/, (a, b, c) =>
-        //     Math.round((parseFloat(b) + parseFloat(c)) * Math.pow(10, 10))
-        //     / Math.pow(10, 10)).split('');
-        //
-        // // expression = expression.join('').replace(/(\d+^%)\+(\d+^%)/, (a, b, c) => b + c).split('');
-        // // console.log(expression);
-        // expression = expression.join('').replace(/(\d+.?\d*)-(\d+.?\d*)/, (a, b, c) => b - c).split('');
         if (/^.+%/.test(expression)) {
           console.log('there is percent');
         }
