@@ -26,7 +26,7 @@ class App extends Component {
 
     lastChar = (arrOfChars) => arrOfChars.slice((-1))[0];
 
-    lastNumber = (arrOfChars) => arrOfChars.join('').match(/\d+$|\d+\.\d+$/);
+    lastNumber = (arrOfChars) => arrOfChars.join('').match(/\d+\.?\d*$/);
 
     addDigit(key) { //It works correct!!
         let { expression, result, isEqual } = this.state;
@@ -44,14 +44,13 @@ class App extends Component {
 
     addOperator(key) {//It works correct!!
         let { expression, result, isEqual } = this.state;
+        const expressionToString = expression.join('');
         if (isEqual) {
-            expression = result;
             isEqual = !isEqual;
         }
-        if (expression.length === 0) alert('Wrong expression');
+        else if (expression.length === 0) alert('Wrong expression');
         else {
-            const lastChar = this.lastChar(expression);
-            if (/[\+-\/\*]$/.test(lastChar) && lastChar.match(/[\+-\/\*]$/) !== '-') {
+            if (/[\+-\/\*]$/.test(expressionToString)) {
                 this.deleteChar();
                 expression = this.state.expression;
             }
@@ -61,48 +60,58 @@ class App extends Component {
         this.setState({ expression, result, isEqual });
     }
 
-    addDecimal() {
+    addDecimal() {//It works correct!!
         let { expression, result, isEqual } = this.state;
-        if (isEqual || expression[0] === '0' || expression.length === 0) {
-            expression = ['0', '.'];
-            result = '.';
-            isEqual = false;
-        } else {
-            const lastNumber = this.lastNumber(expression);
-            if (!/\./.test(lastNumber)) {
+        const expressionToString = expression.join('');
+        if (isEqual) {
+            if (!/\d+\.\d*$/.test(expressionToString)){
                 expression.push('.');
                 result = '.';
             }
+            isEqual = false;
+        } else if (expression.length === 0) {
+            expression = ['0', '.'];
+            result = '.';
+        } else if (!/\.$|(\d+\.\d*$)/.test(expressionToString)) {
+                expression.push('.');
+                result = '.';
         }
         this.setState( {expression, result, isEqual });
     }
 
-    addPercent() {
+    addPercent() {//It works correct!!
         let { expression, result, isEqual } = this.state;
+        const expressionToString = expression.join('');
         if (expression.length > 0) {
-            if (/([-\+\/\*\.]$)|(^\d+$)/.test(expression.join('')) !== true) {
+            if (!/[-\+\/\*]$|(^-?\d+\.?\d*$)/.test(expressionToString)) {
+                if (/\.$/.test(expressionToString)) {
+                    expressionToString.pop();
+                }
                 expression.push('%');
                 result = '%';
             } else alert('Wrong expression');
-        }
+        } else alert('Wrong expression');
         this.setState( {expression, result, isEqual });
     }
 
-    addSign() {//--78 should convert to 78 - it doesn't work
+    addSign() {//It works correct!!
         let { expression, result, isEqual } = this.state;
-        if (expression.length !== 0) {
-            const index = this.lastNumber(expression).index;
+        const expressionToString = expression.join('');
+
+        if (expression.length > 0 && !/[\+-\/\*]$/.test(expressionToString)) {
+            const index = expressionToString.match(/\d+\.?\d*$/).index;
             if (isEqual) {
                 result.splice(0, 0, '-');
                 isEqual = !isEqual;
-            } else if (expression[index - 1] === '-' & ) {// it doesn't finish (*-- == *)
-                expression.splice(index, 0, '-');
-            }
+            } else if (expression[index - 1] === '-' &&
+                (index - 1 === 0 || /[\+-\/\*]/.test(expression[index - 2]))) { // find --78 or *--78 and convert to 78 or *78
+                expression.splice(index - 1, 1);
+            } else expression.splice(index, 0, '-');
         }
         this.setState({ expression, result, isEqual });
     }
 
-    deleteChar() {
+    deleteChar() { //It works correct!!
         let { expression } = this.state;
         expression.pop();
         this.setState({ expression });
@@ -165,7 +174,7 @@ class App extends Component {
         const result = expression;
         console.log(`expression: ${expression}, result: ${result}`);
 
-        if (/^.+%/.test(expression)) {
+        if (/%/.test(expression)) {
           console.log('there is percent');
         }
         // const resultInNum = Math.round(eval(expression.join('')) * Math.pow(10, 10))
