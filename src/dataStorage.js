@@ -11,7 +11,7 @@ export const CALC_PADS = [
     },
     {
         id: "number-sign",
-        text: "+-",
+        text: "\u{00b1}",
         type: "special"
     },
     {
@@ -21,7 +21,7 @@ export const CALC_PADS = [
     },
     {
         id: "backspace",
-        text: "<=",
+        text: "\u{2190}",
         type: "service"
     },
     {
@@ -41,12 +41,12 @@ export const CALC_PADS = [
     },
     {
         id: "divide",
-        text: "/",
-        type: "operator"
+        text: "\u{00f7}",
+        type: "sign"
     },
     {
         id: "power",
-        text: "P",
+        text: "x\u{207f}",
         type: "special"
     },
     {
@@ -66,12 +66,12 @@ export const CALC_PADS = [
     },
     {
         id: "multiply",
-        text: "*",
-        type: "operator"
+        text: "\u{00d7}",
+        type: "sign"
     },
     {
-        id: "radical",
-        text: "R",
+        id: "sqrt",
+        text: "\u{221A}",
         type: "special"
     },
     {
@@ -92,7 +92,7 @@ export const CALC_PADS = [
     {
         id: "subtract",
         text: "-",
-        type: "operator"
+        type: "sign"
     },
     {
         id: "equals",
@@ -117,6 +117,6 @@ export const CALC_PADS = [
     {
         id: "add",
         text: "+",
-        type: "operator"
+        type: "sign"
     }
 ]
