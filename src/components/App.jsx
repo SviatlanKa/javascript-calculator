@@ -15,10 +15,11 @@ class App extends Component {
         this.addDigit = this.addDigit.bind(this);
         this.addMathSign = this.addMathSign.bind(this);
         this.addDecimal = this.addDecimal.bind(this);
-        this.addPercent = this.addPercent.bind(this);
         this.addSign = this.addSign.bind(this);
-        this.addPower = this.addPower.bind(this);
         this.addSquareRoot = this.addSquareRoot.bind(this);
+        this.addPower = this.addPower.bind(this);
+        this.addParenthesis = this.addParenthesis.bind(this);
+        this.addPercent = this.addPercent.bind(this);
         this.deleteChar = this.deleteChar.bind(this);
         this.clearAll = this.clearAll.bind(this);
         this.calculate = this.calculate.bind(this);
@@ -46,8 +47,9 @@ class App extends Component {
         } else {
             if (isEqual) {
                 isEqual = false;
-            } else if (/[\+-\/\*]$/.test(expToString)) {
+            } else if (/[\u00f7\u00d7\+-]$/.test(expToString)) {
                 this.deleteChar();
+                console.log(this.state.expression);
                 expression = this.state.expression;
             }
             expression.push(key.text);
@@ -75,35 +77,43 @@ class App extends Component {
         this.setState( {expression, result, isEqual });
     }
 
-    addPercent() {//It works correct!!
-        let { expression, result, isEqual } = this.state;
-        const expToString = expression.join('');
-        if (expression.length > 0) {
-            if (!/[-\+\/\*]$|(^-?\d+\.?\d*$)/.test(expToString)) {
-                if (/\.$/.test(expToString)) {
-                    expToString.pop();
-                }
-                expression.push('%');
-                result = '%';
-            } else alert('Wrong expression');
-        } else alert('Wrong expression');
-        this.setState( {expression, result, isEqual });
-    }
-
     addSign() {//It works correct!!
         let { expression, result, isEqual } = this.state;
         const expToString = expression.join('');
 
-        if (expression.length > 0 && !/[\+-\/\*%]$/.test(expToString)) {
+        if (expression.length > 0 && /\d+\.?\d*$/.test(expToString)) {
             const index = expToString.match(/\d+\.?\d*$/).index;
             if (isEqual) {
                 result.splice(0, 0, '-');
                 isEqual = false;
             } else if (expression[index - 1] === '-' &&
-                (index - 1 === 0 || /[\+-\/\*]/.test(expression[index - 2]))) { // find --78 or *--78 and convert to 78 or *78
+                (index - 1 === 0 || /[\u00f7\u00d7\+-]/.test(expression[index - 2]))) { // find --78 or *--78 and convert to 78 or *78
                 expression.splice(index - 1, 1);
             } else expression.splice(index, 0, '-');
         }
+        this.setState({ expression, result, isEqual });
+    }
+
+    addParenthesis() {
+        let { expression, result, isEqual } = this.state;
+        const expToString = expression.join('');
+
+        this.setState({ expression, result, isEqual });
+    }
+
+    addSquareRoot() {
+        let { expression, result, isEqual } = this.state;
+        const expToString = expression.join('');
+        if (isEqual) {
+            if (parseFloat(expToString) > 0) {
+                expression.splice(0, 0, '\u{221a}');
+            } else alert('Wrong expression');
+            isEqual = false;
+        } else if (expression.length === 0 || /[\+-\u00f7\u00d7]$/.test(expToString)) {
+            expression.push('\u{221a}');
+            result = '\u{221a}';
+        }
+
         this.setState({ expression, result, isEqual });
     }
 
@@ -114,25 +124,26 @@ class App extends Component {
             isEqual = false;
         }
         if (expression.length > 0 && /-?\d+\.?\d*$/.test(expToString)) {
-                expression.push('^');
-                result = '^';
+            expression.push('^');
+            result = '^';
         } else alert('Wrong expression');
 
         this.setState({ expression, result, isEqual });
     }
 
-    addSquareRoot() {
+    addPercent() {//It works correct!!
         let { expression, result, isEqual } = this.state;
         const expToString = expression.join('');
-        if (isEqual) {
-            expression.splice(0, 0, '\u{221a}');
-            isEqual = false;
-        } else if (expression.length === 0 || /[\+-\/\*]$/.test(expToString)) {
-            expression.push('\u{221a}');
-            result = '\u{221a}';
-        }
-
-        this.setState({ expression, result, isEqual });
+        if (expression.length > 0) {
+            if (!/[-\+\u00f7\u00d7]$|(^-?\d+\.?\d*$)/.test(expToString)) {
+                if (/\.$/.test(expToString)) {
+                    expToString.pop();
+                }
+                expression.push('%');
+                result = '%';
+            } else alert('Wrong expression');
+        } else alert('Wrong expression');
+        this.setState( {expression, result, isEqual });
     }
 
     deleteChar() { //It works correct!!
@@ -206,26 +217,9 @@ class App extends Component {
                 return exp;
         }
 
-        // mathOperators.forEach(elem => {
-        //     let regExp = new RegExp(`(([-\\+\\/\\*]-|^-)\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
-        //     console.log(elem, expToString);
-        //     //next if is wrong!!! -117-45/9+63*5-400 == -59*5 - 400
-        //     if (regExp.test(expToString)) {
-        //         regExp = new RegExp(`(-\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
-        //         replacer(regExp, elem);
-        //     }
-        //     regExp = new RegExp(`(\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
-        //     if (regExp.test(expToString)) {
-        //         replacer(regExp, elem);
-        //     }
-        //     console.log('expToString: ', expToString);
-        //
-        // });
-
-
         if (/%/.test(expToString)) {
           console.log('there is percent');
-          let regExp = /([\/\*])(\d+\.?\d*)(%)/;
+          let regExp = /([\u00f7\u00d7])(\d+\.?\d*)(%)/;
           if(regExp.test(expToString)) {
               expToString = expToString.replace(regExp, (a, b, c) => b + c / 100);
           }
