@@ -131,6 +131,17 @@ class App extends Component {
         let expressionToString = expression.join('');
         let mathOperators = ["\\/", "\\*", "-", "\\+"];
         const replacer = (regExp, operator) => {
+            let regExp = new RegExp(`(([-\\+\\/\\*]-|^-)\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
+            if (regExp.test(expressionToString)) {
+                regExp = new RegExp(`(-\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
+                replacer(regExp, elem);
+            }
+            regExp = new RegExp(`(\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
+            if (regExp.test(expressionToString)) {
+                replacer(regExp, elem);
+            }
+            console.log('expressionToString: ', expressionToString);
+
             while(regExp.exec(expressionToString)){
                 expressionToString = expressionToString.replace(regExp, (a, b, c) => {
                     switch (operator) {
@@ -155,27 +166,50 @@ class App extends Component {
             }
         }
 
-        mathOperators.forEach(elem => {
-            let regExp = new RegExp(`(([-\\+\\/\\*]-|^-)\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
-            console.log(elem, expressionToString);
-            //next if is wrong!!! -117-45/9+63*5-400 == -59*5 - 400
-            if (regExp.test(expressionToString)) {
-                regExp = new RegExp(`(-\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
-                replacer(regExp, elem);
-            }
-            regExp = new RegExp(`(\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
-            if (regExp.test(expressionToString)) {
-                replacer(regExp, elem);
-            }
-            console.log('expressionToString: ', expressionToString);
-
-        });
+        // mathOperators.forEach(elem => {
+        //     let regExp = new RegExp(`(([-\\+\\/\\*]-|^-)\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
+        //     console.log(elem, expressionToString);
+        //     //next if is wrong!!! -117-45/9+63*5-400 == -59*5 - 400
+        //     if (regExp.test(expressionToString)) {
+        //         regExp = new RegExp(`(-\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
+        //         replacer(regExp, elem);
+        //     }
+        //     regExp = new RegExp(`(\\d+\\.?\\d*)${elem}(-?\\d+\\.?\\d*)`);
+        //     if (regExp.test(expressionToString)) {
+        //         replacer(regExp, elem);
+        //     }
+        //     console.log('expressionToString: ', expressionToString);
+        //
+        // });
         expression = expressionToString.split('');
         const result = expression;
         console.log(`expression: ${expression}, result: ${result}`);
 
         if (/%/.test(expression)) {
           console.log('there is percent');
+          let regExp = /([\/\*])(\d+\.?\d*)(%)/;
+          if(regExp.test(expressionToString)) {
+              expressionToString = expressionToString.replace(regExp, (a, b, c) => b + c / 100);
+          }
+          regExp = /[-\+]\d+\.?\d*%/;
+            if(regExp.test(expressionToString)) {
+                let numbersWithPercent = expressionToString.match(regExp);
+                console.log(`numbersWithPercents: ${numbersWithPercent}`);
+                let partsOfExpression = expressionToString.split(regExp);
+                console.log(`partsOfExpression: ${partsOfExpression}`);
+                let resultOfCalc = '';
+                let i = 0;
+                for (i; i < numbersWithPercent.length; i++) {
+                    resultOfCalc += partsOfExpression[i];
+                    resultOfCalc = replacer(resultOfCalc);
+                    resultOfCalc = resultOfCalc + numbersWithPercent[i].replace(/(\d+\.?\d*)(%)/, (a, b) =>
+                        Math.round(resultOfCalc / 100 * b * Math.pow(10, 10)) / Math.pow(10, 10))
+                }
+                if (partsOfExpression.length > numbersWithPercent.lang) {
+                    resultOfCalc += partsOfExpression[i];
+                }
+                expressionToString = replacer(resultOfCalc);
+            }
         }
         // const resultInNum = Math.round(eval(expression.join('')) * Math.pow(10, 10))
         //     / Math.pow(10, 10);
