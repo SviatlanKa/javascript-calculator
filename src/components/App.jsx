@@ -186,33 +186,33 @@ class App extends Component {
     calculate() { //It works correct!!
         let { expression } = this.state;
         let expToString = expression.join('');
-        let mathSigns = [ "\u{221a}", "\\^", "\u{00f7}", "\u{00d7}", "-", "\\+" ];
+        let mathSigns = ["\\+", "\u{221a}", "\\^", "\u{00f7}", "\u{00d7}", "-"];
 
         const calculateExpression = (expForAnalyze) => {
             mathSigns.forEach(sign => {
-                let regExpSign = new RegExp(`${sign}`);
+                let signRE = new RegExp(`${sign}`);
+                let numRE = '\\d+\\.?\\d*(e[-+]\\d+)?';
                 let regExp;
-                while (regExpSign.test(expForAnalyze)){
+                while (signRE.test(expForAnalyze)){
                     console.log('Now calculate this: ', expForAnalyze);
                     if (sign === '\u{221a}') {
-                        regExp = /(\u221a)(\d+\.?\d*)/;
+                        regExp = new RegExp(`(\\u221a)(${numRE})`);
                         expForAnalyze = replacer(expForAnalyze, regExp, sign);
                         console.log('first if')
-                    } else if (sign === '-' && /^-\d+\.?\d*$/.test(expForAnalyze)) {
+                    } else if (/^(-?\d+\.?\d*)(e[-+]\d+)?$/.test(expForAnalyze)) {
                         console.log('Break!');
                         break;
                     } else {
-                        regExp = new RegExp(`(([-+\\u00f7\\u00d7]-|^-)\\d+\\.?\\d*)${sign}(-?\\d+\\.?\\d*)`);
+                        regExp = new RegExp(`(([-+\\u00f7\\u00d7]-|^-)(${numRE}))${sign}(-?${numRE})`);
                         if (regExp.test(expForAnalyze)) {
                             console.log('find [+-/*]-X[+-/*]-?X');
-                            regExp = new RegExp(`(-\\d+\\.?\\d*)${sign}(-?\\d+\\.?\\d*)`);
+                            regExp = new RegExp(`(-${numRE})${sign}(-?${numRE})`);
                             console.log(regExp, expForAnalyze);
                             expForAnalyze = replacer(expForAnalyze, regExp, sign);
                         }
-                        regExp = new RegExp(`(\\d+\\.?\\d*)${sign}(-?\\d+\\.?\\d*)`);
+                        regExp = new RegExp(`(${numRE})${sign}(-?${numRE})`);
                         if (regExp.test(expForAnalyze)) {
                             console.log('find [+-/*]X[+-/*]-?X');
-                            regExp = new RegExp(`(\\d+\\.?\\d*)${sign}(-?\\d+\\.?\\d*)`);
                             console.log(regExp, expForAnalyze);
                             expForAnalyze = replacer(expForAnalyze, regExp, sign);
                         }
@@ -230,6 +230,7 @@ class App extends Component {
                             console.log('\u{221a} ', Math.pow(c, 1/2));
                             return Math.round(Math.pow(c, 1/2) * Math.pow(10, 10)) / Math.pow(10, 10);
                         case '\\^':
+                            console.log(a, b, c);
                             console.log('^', Math.pow(b, c));
                             return Math.round(Math.pow(b, c) * Math.pow(10, 10)) / Math.pow(10, 10);
                         case '\u{00f7}':
