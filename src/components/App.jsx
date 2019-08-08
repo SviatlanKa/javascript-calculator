@@ -189,38 +189,40 @@ class App extends Component {
         let mathSigns = ["\\+", "\u{221a}", "\\^", "\u{00f7}", "\u{00d7}", "-"];
 
         const calculateExpression = (expForAnalyze) => {
-            mathSigns.forEach(sign => {
-                let signRE = new RegExp(`${sign}`);
-                let numRE = '\\d+\\.?\\d*(e[-+]\\d+)?';
-                let regExp;
-                while (signRE.test(expForAnalyze)){
-                    console.log('Now calculate this: ', expForAnalyze);
-                    if (sign === '\u{221a}') {
-                        regExp = new RegExp(`(\\u221a)(${numRE})`);
-                        expForAnalyze = replacer(expForAnalyze, regExp, sign);
-                        console.log('first if')
-                    } else if (/^(-?\d+\.?\d*)(e[-+]\d+)?$/.test(expForAnalyze)) {
-                        console.log('Break!');
-                        break;
-                    } else {
-                        regExp = new RegExp(`(([-+\\u00f7\\u00d7]-|^-)(${numRE}))${sign}(-?${numRE})`);
-                        if (regExp.test(expForAnalyze)) {
-                            console.log('find [+-/*]-X[+-/*]-?X');
-                            regExp = new RegExp(`(-${numRE})${sign}(-?${numRE})`);
-                            console.log(regExp, expForAnalyze);
-                            expForAnalyze = replacer(expForAnalyze, regExp, sign);
-                        }
-                        regExp = new RegExp(`(${numRE})${sign}(-?${numRE})`);
-                        if (regExp.test(expForAnalyze)) {
-                            console.log('find [+-/*]X[+-/*]-?X');
-                            console.log(regExp, expForAnalyze);
-                            expForAnalyze = replacer(expForAnalyze, regExp, sign);
-                        }
-                    }
-                    console.log(expForAnalyze);
-                }
-            });
-            return expForAnalyze;
+            // mathSigns.forEach(sign => {
+            //     let signRE = new RegExp(`${sign}`);
+            //     let numRE = '\\d+\\.?\\d*(e[-+]\\d+)?';
+            //     let regExp;
+                expForAnalyze = '6*7';
+                // while (signRE.test(expForAnalyze)){
+                //     console.log('Now calculate this: ', expForAnalyze);
+                //     if (sign === '\u{221a}') {
+                //         regExp = new RegExp(`(\\u221a)(${numRE})`);
+                //         expForAnalyze = replacer(expForAnalyze, regExp, sign);
+                //         console.log('first if')
+                //     } else if (/^(-?\d+\.?\d*)(e[-+]\d+)?$/.test(expForAnalyze)) {
+                //         console.log('Break!');
+                //         break;
+                //     } else {
+                //         regExp = new RegExp(`(([-+\\u00f7\\u00d7]-|^-)(${numRE}))${sign}(-?${numRE})`);
+                //         if (regExp.test(expForAnalyze)) {
+                //             console.log('find [+-/*]-X[+-/*]-?X');
+                //             regExp = new RegExp(`(-${numRE})${sign}(-?${numRE})`);
+                //             console.log(regExp, expForAnalyze);
+                //             expForAnalyze = replacer(expForAnalyze, regExp, sign);
+                //         }
+                //         regExp = new RegExp(`(${numRE})${sign}(-?${numRE})`);
+                //         if (regExp.test(expForAnalyze)) {
+                //             regExp = new RegExp(`(-${numRE})${sign}(-?${numRE})`);
+                //             console.log('find [+-/*]X[+-/*]-?X');
+                //             console.log(regExp, expForAnalyze);
+                //             expForAnalyze = replacer(expForAnalyze, regExp, sign);
+                //         }
+                //     }
+                //     console.log(expForAnalyze);
+                // }
+            //});
+            //return expForAnalyze;
         }
 
         const replacer = (exp, regExp, mathSign) => {
