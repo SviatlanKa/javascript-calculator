@@ -82,7 +82,7 @@ class App extends Component {
         let { expression, result, isEqual } = this.state;
         const expToString = expression.join('');
 
-        if (expression.length > 0 && /\d+\.?\d*$/.test(expToString)) {
+        if (expression.length > 0 && !/[\u221a]\d+\.?\d*$/.test(expToString) && /\d+\.?\d*$/.test(expToString)) {
             const index = expToString.match(/\d+\.?\d*$/).index;
             if (isEqual) {
                 result.splice(0, 0, '-');
@@ -91,7 +91,7 @@ class App extends Component {
                 (index - 1 === 0 || /[\u00f7\u00d7+-]/.test(expression[index - 2]))) { // find --78 or *--78 and convert to 78 or *78
                 expression.splice(index - 1, 1);
             } else expression.splice(index, 0, '-');
-        }
+        } else alert('Wrong expression');
         this.setState({ expression, result, isEqual });
     }
 
@@ -127,12 +127,17 @@ class App extends Component {
         let { expression, result, isEqual } = this.state;
         const expToString = expression.join('');
 
+        console.log(`isEqual from addSR: ${isEqual}`);
+
         if (isEqual) {
             if (parseFloat(expToString) > 0) {
                 expression.splice(0, 0, '\u{221a}');
             } else alert('Wrong expression');
             isEqual = false;
-        } else if (expression.length === 0 || /[+-\u00f7\u00d7]$/.test(expToString)) {
+        } else if (expression.length === 0 || /[+-\u00f7\u00d7]$/.test(expToString)) { //Check this!!!
+            console.log(`expression.length: ${expression.length}`);
+            console.log(expToString);
+            console.log(/[+-\u00f7\u00d7]$/.test(expToString));
             expression.push('\u{221a}');
             result = '\u{221a}';
         }
@@ -193,12 +198,12 @@ class App extends Component {
             let regExp;
             let signRE;
             mathSigns.forEach(sign => {
-                signRE = new RegExp(`${numRE}${sign}-?${numRE}`);
+                signRE = (sign === "\u{221a}") ? new RegExp(`(\\u221a)(${numRE})`) : new RegExp(`${numRE}${sign}-?${numRE}`);
                 console.log(signRE);
                 while (signRE.test(expForAnalyze)){
                     console.log('Now calculate this: ', expForAnalyze);
                     if (sign === '\u{221a}') {
-                        regExp = new RegExp(`(\\u221a)(${numRE})`);
+                        regExp = signRE;
                         expForAnalyze = replacer(expForAnalyze, regExp, sign);
                         console.log('first if')
                     } else if (new RegExp(`^-?${numRE}$`).test(expForAnalyze)) {
