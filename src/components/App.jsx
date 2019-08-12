@@ -127,17 +127,12 @@ class App extends Component {
         let { expression, result, isEqual } = this.state;
         const expToString = expression.join('');
 
-        console.log(`isEqual from addSR: ${isEqual}`);
-
         if (isEqual) {
             if (parseFloat(expToString) > 0) {
                 expression.splice(0, 0, '\u{221a}');
             } else alert('Wrong expression');
             isEqual = false;
-        } else if (expression.length === 0 || /[+-\u00f7\u00d7]$/.test(expToString)) { //Check this!!!
-            console.log(`expression.length: ${expression.length}`);
-            console.log(expToString);
-            console.log(/[+-\u00f7\u00d7]$/.test(expToString));
+        } else if (expression.length === 0 || /[\u00f7\u00d7+-]$/.test(expToString)) { //Check this!!!
             expression.push('\u{221a}');
             result = '\u{221a}';
         }
@@ -198,21 +193,20 @@ class App extends Component {
             let regExp;
             let signRE;
             mathSigns.forEach(sign => {
+                console.log(`expression for analyze: ${expForAnalyze}`);
                 signRE = (sign === "\u{221a}") ? new RegExp(`(\\u221a)(${numRE})`) : new RegExp(`${numRE}${sign}-?${numRE}`);
-                console.log(signRE);
+                console.log(`signRE: ${signRE}`);
                 while (signRE.test(expForAnalyze)){
-                    console.log('Now calculate this: ', expForAnalyze);
                     if (sign === '\u{221a}') {
                         regExp = signRE;
                         expForAnalyze = replacer(expForAnalyze, regExp, sign);
-                        console.log('first if')
+                        console.log(`expression for analyze: ${expForAnalyze}`);
                     } else if (new RegExp(`^-?${numRE}$`).test(expForAnalyze)) {
                         console.log('Break!');
                         break;
                     } else {
-                        regExp = new RegExp(`([-+\\u00f7\\u00d7]?-${numRE})${sign}(-?${numRE})`);
+                        regExp = new RegExp(`(^-|[\\u00f7\\u00d7+-]-${numRE})${sign}(-?${numRE})`); //It doesn't work 9-5^2 == 925, 9-5^3 == 116, because 9+(-5^2)
                         if (regExp.test(expForAnalyze)) {
-                            console.log('find [+-/*]-X[+-/*]-?X');
                             regExp = new RegExp(`(-${numRE})${sign}(-?${numRE})`);
                             console.log(regExp, expForAnalyze);
                             expForAnalyze = replacer(expForAnalyze, regExp, sign);
@@ -220,12 +214,11 @@ class App extends Component {
                         regExp = new RegExp(`(${numRE})${sign}(-?${numRE})`);
                         if (regExp.test(expForAnalyze)) {
                             regExp = new RegExp(`(${numRE})${sign}(-?${numRE})`);
-                            console.log('find [+-/*]X[+-/*]-?X');
                             console.log(regExp, expForAnalyze);
                             expForAnalyze = replacer(expForAnalyze, regExp, sign);
                         }
                     }
-                    console.log(expForAnalyze);
+                    console.log(`expForAnalyze: ${expForAnalyze}`);
                 }
             });
             return expForAnalyze;
@@ -235,6 +228,7 @@ class App extends Component {
                 exp = exp.replace(regExp, (a, b, c, d, e) => {
                     switch (mathSign) {
                         case '\u{221a}':
+                            console.log(a, b, c, d, e);
                             console.log('\u{221a} ', Math.pow(c, 1/2));
                             return Math.round(Math.pow(c, 1/2) * Math.pow(10, 10)) / Math.pow(10, 10);
                         case '\\^':
@@ -286,16 +280,16 @@ class App extends Component {
                 expToString = calculateExpression(expToString);
             } else alert('Unfinished expression');
         } else if (/%/.test(expToString)) {
-          let regExp = /([\u00f7\u00d7])(\d+\.?\d*)(%)/;
-          if (regExp.test(expToString)) {
-              expToString = expToString.replace(regExp, (a, b, c) => b + c / 100);
-          }
-          regExp = /[-+]-?\d+\.?\d*%/g;
+              let regExp = /([\u00f7\u00d7])(\d+\.?\d*)(%)/;
+              if (regExp.test(expToString)) {
+                  expToString = expToString.replace(regExp, (a, b, c) => b + c / 100);
+              }
+            regExp = /[-+]-?\d+\.?\d*%/g;
             if (regExp.test(expToString)) {
                 let numbersWithPercent = expToString.match(regExp);
-                //console.log(`numbersWithPercents: ${numbersWithPercent}`);
+                console.log(`numbersWithPercents: ${numbersWithPercent}`);
                 let partsOfExp = expToString.split(regExp);
-                //console.log(`partsOfExpression: ${partsOfExp}`);
+                console.log(`partsOfExpression: ${partsOfExp}`);
                 let resultOfCalc = '';
                 let i = 0;
                 for (i; i < numbersWithPercent.length; i++) {
