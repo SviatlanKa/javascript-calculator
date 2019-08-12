@@ -186,72 +186,73 @@ class App extends Component {
     calculate() { //It works correct!!
         let { expression } = this.state;
         let expToString = expression.join('');
-        let mathSigns = ["\\+", "\u{221a}", "\\^", "\u{00f7}", "\u{00d7}", "-"];
+        const numRE = '\\d+\\.?\\d*(e[-+]\\d+)?';
+        let mathSigns = ["\u{221a}", "\\^", "\u{00f7}", "\u{00d7}", "-", "\\+"];
 
         const calculateExpression = (expForAnalyze) => {
-            // mathSigns.forEach(sign => {
-            //     let signRE = new RegExp(`${sign}`);
-            //     let numRE = '\\d+\\.?\\d*(e[-+]\\d+)?';
-            //     let regExp;
-                expForAnalyze = '6*7';
-                // while (signRE.test(expForAnalyze)){
-                //     console.log('Now calculate this: ', expForAnalyze);
-                //     if (sign === '\u{221a}') {
-                //         regExp = new RegExp(`(\\u221a)(${numRE})`);
-                //         expForAnalyze = replacer(expForAnalyze, regExp, sign);
-                //         console.log('first if')
-                //     } else if (/^(-?\d+\.?\d*)(e[-+]\d+)?$/.test(expForAnalyze)) {
-                //         console.log('Break!');
-                //         break;
-                //     } else {
-                //         regExp = new RegExp(`(([-+\\u00f7\\u00d7]-|^-)(${numRE}))${sign}(-?${numRE})`);
-                //         if (regExp.test(expForAnalyze)) {
-                //             console.log('find [+-/*]-X[+-/*]-?X');
-                //             regExp = new RegExp(`(-${numRE})${sign}(-?${numRE})`);
-                //             console.log(regExp, expForAnalyze);
-                //             expForAnalyze = replacer(expForAnalyze, regExp, sign);
-                //         }
-                //         regExp = new RegExp(`(${numRE})${sign}(-?${numRE})`);
-                //         if (regExp.test(expForAnalyze)) {
-                //             regExp = new RegExp(`(-${numRE})${sign}(-?${numRE})`);
-                //             console.log('find [+-/*]X[+-/*]-?X');
-                //             console.log(regExp, expForAnalyze);
-                //             expForAnalyze = replacer(expForAnalyze, regExp, sign);
-                //         }
-                //     }
-                //     console.log(expForAnalyze);
-                // }
-            //});
-            //return expForAnalyze;
+            let regExp;
+            let signRE;
+            mathSigns.forEach(sign => {
+                signRE = new RegExp(`${numRE}${sign}-?${numRE}`);
+                console.log(signRE);
+                while (signRE.test(expForAnalyze)){
+                    console.log('Now calculate this: ', expForAnalyze);
+                    if (sign === '\u{221a}') {
+                        regExp = new RegExp(`(\\u221a)(${numRE})`);
+                        expForAnalyze = replacer(expForAnalyze, regExp, sign);
+                        console.log('first if')
+                    } else if (new RegExp(`^-?${numRE}$`).test(expForAnalyze)) {
+                        console.log('Break!');
+                        break;
+                    } else {
+                        regExp = new RegExp(`([-+\\u00f7\\u00d7]?-${numRE})${sign}(-?${numRE})`);
+                        if (regExp.test(expForAnalyze)) {
+                            console.log('find [+-/*]-X[+-/*]-?X');
+                            regExp = new RegExp(`(-${numRE})${sign}(-?${numRE})`);
+                            console.log(regExp, expForAnalyze);
+                            expForAnalyze = replacer(expForAnalyze, regExp, sign);
+                        }
+                        regExp = new RegExp(`(${numRE})${sign}(-?${numRE})`);
+                        if (regExp.test(expForAnalyze)) {
+                            regExp = new RegExp(`(${numRE})${sign}(-?${numRE})`);
+                            console.log('find [+-/*]X[+-/*]-?X');
+                            console.log(regExp, expForAnalyze);
+                            expForAnalyze = replacer(expForAnalyze, regExp, sign);
+                        }
+                    }
+                    console.log(expForAnalyze);
+                }
+            });
+            return expForAnalyze;
         }
 
         const replacer = (exp, regExp, mathSign) => {
-                exp = exp.replace(regExp, (a, b, c) => {
+                exp = exp.replace(regExp, (a, b, c, d, e) => {
                     switch (mathSign) {
                         case '\u{221a}':
                             console.log('\u{221a} ', Math.pow(c, 1/2));
                             return Math.round(Math.pow(c, 1/2) * Math.pow(10, 10)) / Math.pow(10, 10);
                         case '\\^':
-                            console.log(a, b, c);
-                            console.log('^', Math.pow(b, c));
-                            return Math.round(Math.pow(b, c) * Math.pow(10, 10)) / Math.pow(10, 10);
+                            console.log(a, b, c, d, e);
+                            console.log('^', Math.pow(b, d));
+                            return Math.round(Math.pow(b, d) * Math.pow(10, 10)) / Math.pow(10, 10);
                         case '\u{00f7}':
-                            console.log(a, b, c);
-                            console.log('\\ ', Math.round(b / c * Math.pow(10, 10)) / Math.pow(10, 10));
-                            return Math.round(b / c * Math.pow(10, 10)) / Math.pow(10, 10);
+                            console.log(a, b, c, d, e);
+                            console.log('\\ ', Math.round(b / d * Math.pow(10, 10)) / Math.pow(10, 10));
+                            return Math.round(b / d * Math.pow(10, 10)) / Math.pow(10, 10);
                         case '\u{00d7}':
-                            console.log(a, b, c);
-                            console.log('*', Math.round(b * c * Math.pow(10, 10)) / Math.pow(10, 10));
-                            return Math.round(b * c * Math.pow(10, 10)) / Math.pow(10, 10)
+                            console.log(a, b, c, d, e);
+                            console.log('*', Math.round(b * d * Math.pow(10, 10)) / Math.pow(10, 10));
+                            return Math.round(b * d * Math.pow(10, 10)) / Math.pow(10, 10)
                         case '-':
-                            console.log(a, b, c);
-                            console.log('-', Math.round((b - c) * Math.pow(10, 10)) / Math.pow(10, 10));
-                            return Math.round((b - c) * Math.pow(10, 10)) / Math.pow(10, 10);
+                            console.log(a, b, c, d, e);
+                            console.log('-', Math.round((b - d) * Math.pow(10, 10)) / Math.pow(10, 10));
+                            return Math.round((b - d) * Math.pow(10, 10)) / Math.pow(10, 10);
                         case '\\+':
-                            console.log(a, b, c);
-                            console.log('+', Math.round((parseFloat(b) + parseFloat(c)) * Math.pow(10, 10))
+                            console.log(a, b, c, d, e);
+                            console.log('+', Math.round((parseFloat(b) + parseFloat(d)) * Math.pow(10, 10))
                                 / Math.pow(10, 10));
-                            return Math.round((parseFloat(b) + parseFloat(c)) * Math.pow(10, 10))
+                            return Math.round((parseFloat(b) + parseFloat(d)) * Math.pow(10, 10))
                                 / Math.pow(10, 10);
                         default:
                             break;
