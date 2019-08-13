@@ -82,7 +82,7 @@ class App extends Component {
         let { expression, result, isEqual } = this.state;
         const expToString = expression.join('');
 
-        if (expression.length > 0 && !/[\u221a]\d+\.?\d*$/.test(expToString) && /\d+\.?\d*$/.test(expToString)) {
+        if (expression.length > 0 && !/[\u221a]\d+\.?\d*(e[-+]\d+)?$/.test(expToString) && /\d+\.?\d*(e[-+]\d+)?$/.test(expToString)) {
             const index = expToString.match(/\d+\.?\d*$/).index;
             if (isEqual) {
                 result.splice(0, 0, '-');
@@ -146,7 +146,7 @@ class App extends Component {
         if (isEqual) {
             isEqual = false;
         }
-        if (expression.length > 0 && /-?\d+\.?\d*$/.test(expToString)) {
+        if (expression.length > 0 && /-?\d+\.?\d*(e[-+]\d+)?$/.test(expToString)) {
             expression.push('^');
             result = '^';
         } else alert('Wrong expression');
@@ -158,7 +158,7 @@ class App extends Component {
         const expToString = expression.join('');
 
         if (expression.length > 0) {
-            if (!/[-+\u00f7\u00d7]$|(^-?\d+\.?\d*$)/.test(expToString)) {
+            if (!/[-+\u00f7\u00d7]$|(^-?\d+\.?\d*(e[-+]\d+)?$)/.test(expToString)) {
                 if (/\.$/.test(expToString)) {
                     expToString.pop();
                 }
@@ -189,6 +189,42 @@ class App extends Component {
         const numRE = '\\d+\\.?\\d*(e[-+]\\d+)?';
         let mathSigns = ["\u{221a}", "\\^", "\u{00f7}", "\u{00d7}", "-", "\\+"];
 
+        const replacer = (exp, regExp, mathSign) => {
+            exp = exp.replace(regExp, (a, b, c, d, e) => {
+                switch (mathSign) {
+                    case '\u{221a}':
+                        console.log(a, b, c, d, e);
+                        console.log('\u{221a} ', Math.pow(c, 1/2));
+                        return Math.round(Math.pow(c, 1/2) * Math.pow(10, 10)) / Math.pow(10, 10);
+                    case '\\^':
+                        console.log(a, b, c, d, e);
+                        console.log('^', Math.pow(b, d));
+                        return Math.round(Math.pow(b, d) * Math.pow(10, 10)) / Math.pow(10, 10);
+                    case '\u{00f7}':
+                        console.log(a, b, c, d, e);
+                        console.log('\\ ', Math.round(b / d * Math.pow(10, 10)) / Math.pow(10, 10));
+                        return Math.round(b / d * Math.pow(10, 10)) / Math.pow(10, 10);
+                    case '\u{00d7}':
+                        console.log(a, b, c, d, e);
+                        console.log('*', Math.round(b * d * Math.pow(10, 10)) / Math.pow(10, 10));
+                        return Math.round(b * d * Math.pow(10, 10)) / Math.pow(10, 10)
+                    case '-':
+                        console.log(a, b, c, d, e);
+                        console.log('-', Math.round((b - d) * Math.pow(10, 10)) / Math.pow(10, 10));
+                        return Math.round((b - d) * Math.pow(10, 10)) / Math.pow(10, 10);
+                    case '\\+':
+                        console.log(a, b, c, d, e);
+                        console.log('+', Math.round((parseFloat(b) + parseFloat(d)) * Math.pow(10, 10))
+                            / Math.pow(10, 10));
+                        return Math.round((parseFloat(b) + parseFloat(d)) * Math.pow(10, 10))
+                            / Math.pow(10, 10);
+                    default:
+                        break;
+                }
+            });
+            return exp;
+        }
+
         const calculateExpression = (expForAnalyze) => {
             let regExp;
             let signRE;
@@ -205,7 +241,7 @@ class App extends Component {
                         console.log('Break!');
                         break;
                     } else {
-                        regExp = new RegExp(`(^-|[\\u00f7\\u00d7+-]-${numRE})${sign}(-?${numRE})`); //It doesn't work 9-5^2 == 925, 9-5^3 == 116, because 9+(-5^2)
+                        regExp = new RegExp(`(^-|[\\u00f7\\u00d7+-]-${numRE})${sign}(-?${numRE})`);
                         if (regExp.test(expForAnalyze)) {
                             regExp = new RegExp(`(-${numRE})${sign}(-?${numRE})`);
                             console.log(regExp, expForAnalyze);
@@ -224,41 +260,56 @@ class App extends Component {
             return expForAnalyze;
         }
 
-        const replacer = (exp, regExp, mathSign) => {
-                exp = exp.replace(regExp, (a, b, c, d, e) => {
-                    switch (mathSign) {
-                        case '\u{221a}':
-                            console.log(a, b, c, d, e);
-                            console.log('\u{221a} ', Math.pow(c, 1/2));
-                            return Math.round(Math.pow(c, 1/2) * Math.pow(10, 10)) / Math.pow(10, 10);
-                        case '\\^':
-                            console.log(a, b, c, d, e);
-                            console.log('^', Math.pow(b, d));
-                            return Math.round(Math.pow(b, d) * Math.pow(10, 10)) / Math.pow(10, 10);
-                        case '\u{00f7}':
-                            console.log(a, b, c, d, e);
-                            console.log('\\ ', Math.round(b / d * Math.pow(10, 10)) / Math.pow(10, 10));
-                            return Math.round(b / d * Math.pow(10, 10)) / Math.pow(10, 10);
-                        case '\u{00d7}':
-                            console.log(a, b, c, d, e);
-                            console.log('*', Math.round(b * d * Math.pow(10, 10)) / Math.pow(10, 10));
-                            return Math.round(b * d * Math.pow(10, 10)) / Math.pow(10, 10)
-                        case '-':
-                            console.log(a, b, c, d, e);
-                            console.log('-', Math.round((b - d) * Math.pow(10, 10)) / Math.pow(10, 10));
-                            return Math.round((b - d) * Math.pow(10, 10)) / Math.pow(10, 10);
-                        case '\\+':
-                            console.log(a, b, c, d, e);
-                            console.log('+', Math.round((parseFloat(b) + parseFloat(d)) * Math.pow(10, 10))
-                                / Math.pow(10, 10));
-                            return Math.round((parseFloat(b) + parseFloat(d)) * Math.pow(10, 10))
-                                / Math.pow(10, 10);
-                        default:
-                            break;
-                    }
-                });
-                return exp;
+        const calculatePercent = (exp) => {
+            let regExp = /([\u00f7\u00d7])(\d+\.?\d*)(%)/;
+            if (regExp.test(exp)) {
+                exp = exp.replace(regExp, (a, b, c) => b + c / 100);
+            }
+            regExp = /[-+]-?\d+\.?\d*%/g;
+            if (regExp.test(exp)) {
+                let numbersWithPercent = exp.match(regExp);
+                console.log(`numbersWithPercents: ${numbersWithPercent}`);
+                let partsOfExp = exp.split(regExp);
+                console.log(`partsOfExpression: ${partsOfExp}`);
+                let resultOfCalc = '';
+                let i = 0;
+                for (i; i < numbersWithPercent.length; i++) {
+                    resultOfCalc += partsOfExp[i];
+                    resultOfCalc = calculateExpression(resultOfCalc);
+                    resultOfCalc += numbersWithPercent[i].replace(/(\d+\.?\d*)(%)/, (a, b) =>
+                        Math.round(resultOfCalc / 100 * b * Math.pow(10, 10)) / Math.pow(10, 10))
+                }
+                if (partsOfExp.length > numbersWithPercent.length) {
+                    resultOfCalc += partsOfExp[i];
+                }
+                exp = calculateExpression(resultOfCalc);
+            }
+            exp = calculateExpression(expToString);
+            return exp;
         }
+
+        const calculateParenthesis = exp => {
+            if (/\)/.test(expToString)) {
+                let partOfExp, resultOfCalc;
+                let beginSlice, endSlice;
+
+                while (/\)/.test(expToString)) {
+                    endSlice = expToString.indexOf(')');
+                    console.log(`endSlice: ${endSlice}`);
+                    beginSlice = expToString.lastIndexOf('(', endSlice) + 1;
+                    console.log(`beginSlice: ${beginSlice}`);
+                    partOfExp = expToString.slice(beginSlice, endSlice);
+                    console.log(`partOfExp: ${partOfExp}`);
+                    //search for %%%
+                }
+            }
+            return exp;
+        }
+
+
+
+        expToString = '(135+9^2+15%)\u{00f7}(17-3\u{00d7}(4^3-\u{221a}15))+30%-921\u{00f7}4';
+        console.log(expToString);
 
         if (/\(/.test(expToString)) {
             if (/\)/.test(expToString)) {
@@ -267,15 +318,15 @@ class App extends Component {
 
                 while (/\)/.test(expToString)) {
                     endSlice = expToString.indexOf(')');
-                    //console.log(`endSlice: ${endSlice}`);
+                    console.log(`endSlice: ${endSlice}`);
                     beginSlice = expToString.lastIndexOf('(', endSlice) + 1;
-                    // console.log(`beginSlice: ${beginSlice}`);
+                    console.log(`beginSlice: ${beginSlice}`);
                     partOfExp = expToString.slice(beginSlice, endSlice);
-                    // console.log(`partOfExp: ${partOfExp}`);
+                    console.log(`partOfExp: ${partOfExp}`);
                     resultOfCalc = calculateExpression(partOfExp);
-                    // console.log(`resultOfCalc: ${resultOfCalc}`);
+                    console.log(`resultOfCalc: ${resultOfCalc}`);
                     expToString = expToString.replace(`(${partOfExp})`, resultOfCalc);
-                    // console.log(`expToString: ${expToString}`);
+                    console.log(`expToString: ${expToString}`);
                 }
                 expToString = calculateExpression(expToString);
             } else alert('Unfinished expression');
@@ -303,6 +354,7 @@ class App extends Component {
                 }
                 expToString = calculateExpression(resultOfCalc);
             }
+            expToString = calculateExpression(expToString);
         } else expToString = calculateExpression(expToString);
 
         expression = expToString.split('');
