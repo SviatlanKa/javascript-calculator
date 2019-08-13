@@ -88,7 +88,7 @@ class App extends Component {
                 result.splice(0, 0, '-');
                 isEqual = false;
             } else if (expression[index - 1] === '-' &&
-                (index - 1 === 0 || /[\u00f7\u00d7+-]/.test(expression[index - 2]))) { // find --78 or *--78 and convert to 78 or *78
+                (index - 1 === 0 || /[\u00f7\u00d7+-]/.test(expression[index - 2]))) {
                 expression.splice(index - 1, 1);
             } else expression.splice(index, 0, '-');
         } else alert('Wrong expression');
@@ -282,80 +282,45 @@ class App extends Component {
                 if (partsOfExp.length > numbersWithPercent.length) {
                     resultOfCalc += partsOfExp[i];
                 }
-                exp = calculateExpression(resultOfCalc);
+                return calculateExpression(resultOfCalc);
             }
-            exp = calculateExpression(expToString);
-            return exp;
+            return calculateExpression(exp);
         }
 
         const calculateParenthesis = exp => {
-            if (/\)/.test(expToString)) {
+            if (/\)/.test(exp)) {
                 let partOfExp, resultOfCalc;
                 let beginSlice, endSlice;
 
-                while (/\)/.test(expToString)) {
-                    endSlice = expToString.indexOf(')');
+                while (/\)/.test(exp)) {
+                    endSlice = exp.indexOf(')');
                     console.log(`endSlice: ${endSlice}`);
-                    beginSlice = expToString.lastIndexOf('(', endSlice) + 1;
+                    beginSlice = exp.lastIndexOf('(', endSlice) + 1;
                     console.log(`beginSlice: ${beginSlice}`);
-                    partOfExp = expToString.slice(beginSlice, endSlice);
+                    partOfExp = exp.slice(beginSlice, endSlice);
                     console.log(`partOfExp: ${partOfExp}`);
-                    //search for %%%
+                    resultOfCalc = (/%/.test(exp)) ? calculatePercent(partOfExp) : calculateExpression(partOfExp);
+                    console.log(`exp from %: ${exp}`);
+                    exp = exp.replace(`(${partOfExp})`, resultOfCalc);
                 }
-            }
-            return exp;
+                return calculateExpression(exp);
+            } else alert('Unfinished expression');
+
         }
 
 
 
-        expToString = '(135+9^2+15%)\u{00f7}(17-3\u{00d7}(4^3-\u{221a}15))+30%-921\u{00f7}4';
+        //expToString = '(135+9^2+15%)\u{00f7}(17-3\u{00d7}(4^3-\u{221a}15))+30%-921\u{00f7}4';
         console.log(expToString);
 
         if (/\(/.test(expToString)) {
-            if (/\)/.test(expToString)) {
-                let partOfExp, resultOfCalc;
-                let beginSlice, endSlice;
-
-                while (/\)/.test(expToString)) {
-                    endSlice = expToString.indexOf(')');
-                    console.log(`endSlice: ${endSlice}`);
-                    beginSlice = expToString.lastIndexOf('(', endSlice) + 1;
-                    console.log(`beginSlice: ${beginSlice}`);
-                    partOfExp = expToString.slice(beginSlice, endSlice);
-                    console.log(`partOfExp: ${partOfExp}`);
-                    resultOfCalc = calculateExpression(partOfExp);
-                    console.log(`resultOfCalc: ${resultOfCalc}`);
-                    expToString = expToString.replace(`(${partOfExp})`, resultOfCalc);
-                    console.log(`expToString: ${expToString}`);
-                }
-                expToString = calculateExpression(expToString);
-            } else alert('Unfinished expression');
-        } else if (/%/.test(expToString)) {
-              let regExp = /([\u00f7\u00d7])(\d+\.?\d*)(%)/;
-              if (regExp.test(expToString)) {
-                  expToString = expToString.replace(regExp, (a, b, c) => b + c / 100);
-              }
-            regExp = /[-+]-?\d+\.?\d*%/g;
-            if (regExp.test(expToString)) {
-                let numbersWithPercent = expToString.match(regExp);
-                console.log(`numbersWithPercents: ${numbersWithPercent}`);
-                let partsOfExp = expToString.split(regExp);
-                console.log(`partsOfExpression: ${partsOfExp}`);
-                let resultOfCalc = '';
-                let i = 0;
-                for (i; i < numbersWithPercent.length; i++) {
-                    resultOfCalc += partsOfExp[i];
-                    resultOfCalc = calculateExpression(resultOfCalc);
-                    resultOfCalc += numbersWithPercent[i].replace(/(\d+\.?\d*)(%)/, (a, b) =>
-                        Math.round(resultOfCalc / 100 * b * Math.pow(10, 10)) / Math.pow(10, 10))
-                }
-                if (partsOfExp.length > numbersWithPercent.length) {
-                    resultOfCalc += partsOfExp[i];
-                }
-                expToString = calculateExpression(resultOfCalc);
-            }
-            expToString = calculateExpression(expToString);
-        } else expToString = calculateExpression(expToString);
+            expToString = calculateParenthesis(expToString);
+        }
+        if (/%/.test(expToString)) {
+            console.log(`expToString from %: ${expToString}`);
+            expToString = calculatePercent(expToString)
+        }
+        if (!/^-?\d+\.?\d*(e[-+]\d+)?$/.test(expToString)) expToString = calculateExpression(expToString);
 
         expression = expToString.split('');
         const result = expression;
