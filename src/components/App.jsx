@@ -240,7 +240,8 @@ class App extends Component {
                         console.log('Break!');
                         break;
                     } else {
-                        regExp = new RegExp(`(^-|[\\u00f7\\u00d7+-]-${numRE})${sign}(-?${numRE})`);
+                        regExp = new RegExp(`(^-|[\\u00f7\\u00d7+-]-)(${numRE})${sign}(-?${numRE})`);
+                        console.log(expForAnalyze.match(regExp));
                         if (regExp.test(expForAnalyze)) {
                             regExp = new RegExp(`(-${numRE})${sign}(-?${numRE})`);
                             console.log(regExp, expForAnalyze);
@@ -278,12 +279,12 @@ class App extends Component {
                     resultOfCalc += numbersWithPercent[i].replace(/(\d+\.?\d*)(%)/, (a, b) =>
                         Math.round(resultOfCalc / 100 * b * Math.pow(10, 10)) / Math.pow(10, 10))
                 }
-                exp = resultOfCalc;
-                //console.log(`resultOfCalc from %: ${resultOfCalc}`);
-                // if (partsOfExp.length > numbersWithPercent.length) {
-                //     resultOfCalc += partsOfExp[i];
-                // }
-                // return calculateExpression(resultOfCalc);
+                exp = calculateExpression(resultOfCalc);
+                console.log(`resultOfCalc from %: ${resultOfCalc}, exp: ${exp}`);
+                if (partsOfExp.length > numbersWithPercent.length) {
+                    exp += partsOfExp[partsOfExp.length - 1];
+                }
+                return exp;
             }
             return calculateExpression(exp);
         }
@@ -312,7 +313,7 @@ class App extends Component {
 
 
 
-        //expToString = '(135+9^2+15%)\u{00f7}(17-3\u{00d7}(4^3-\u{221a}15))+30%-921\u{00f7}4';
+        expToString = '(135+9^2+15%)\u{00f7}(17-3\u{00d7}(4^3-\u{221a}15))+30%-921\u{00f7}4';
         console.log(expToString);
 
         if (/\(/.test(expToString)) {
