@@ -231,7 +231,6 @@ class App extends Component {
             mathSigns.forEach(sign => {
                 console.log(`expression for analyze: ${expForAnalyze}`);
                 signRE = (sign === "\u{221a}") ? new RegExp(`(\\u221a)(${numRE})`) : new RegExp(`${numRE}${sign}-?${numRE}`);
-                console.log(`signRE: ${signRE}`);
                 while (signRE.test(expForAnalyze)){
                     if (sign === '\u{221a}') {
                         regExp = signRE;
@@ -279,10 +278,12 @@ class App extends Component {
                     resultOfCalc += numbersWithPercent[i].replace(/(\d+\.?\d*)(%)/, (a, b) =>
                         Math.round(resultOfCalc / 100 * b * Math.pow(10, 10)) / Math.pow(10, 10))
                 }
-                if (partsOfExp.length > numbersWithPercent.length) {
-                    resultOfCalc += partsOfExp[i];
-                }
-                return calculateExpression(resultOfCalc);
+                exp = resultOfCalc;
+                //console.log(`resultOfCalc from %: ${resultOfCalc}`);
+                // if (partsOfExp.length > numbersWithPercent.length) {
+                //     resultOfCalc += partsOfExp[i];
+                // }
+                // return calculateExpression(resultOfCalc);
             }
             return calculateExpression(exp);
         }
@@ -294,16 +295,17 @@ class App extends Component {
 
                 while (/\)/.test(exp)) {
                     endSlice = exp.indexOf(')');
-                    console.log(`endSlice: ${endSlice}`);
+                    //console.log(`endSlice: ${endSlice}`);
                     beginSlice = exp.lastIndexOf('(', endSlice) + 1;
-                    console.log(`beginSlice: ${beginSlice}`);
+                    //console.log(`beginSlice: ${beginSlice}`);
                     partOfExp = exp.slice(beginSlice, endSlice);
-                    console.log(`partOfExp: ${partOfExp}`);
-                    resultOfCalc = (/%/.test(exp)) ? calculatePercent(partOfExp) : calculateExpression(partOfExp);
-                    console.log(`exp from %: ${exp}`);
+                    //console.log(`partOfExp: ${partOfExp}`);
+                    resultOfCalc = (/%/.test(partOfExp)) ? calculatePercent(partOfExp) : calculateExpression(partOfExp);
+                    console.log(`resultOfCalc from %: ${resultOfCalc}`);
                     exp = exp.replace(`(${partOfExp})`, resultOfCalc);
+                    console.log(`exp after (): ${exp}`);
                 }
-                return calculateExpression(exp);
+                return exp;
             } else alert('Unfinished expression');
 
         }
