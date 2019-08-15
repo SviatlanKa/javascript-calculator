@@ -18,10 +18,9 @@
 }
 
 #keypads {
-    display: flex;
-    /*flex-direction: column;*/
+    flex-direction: row-reverse;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-between;
     width: 99%;
     border: solid 1px darkgreen;
 }
@@ -29,12 +28,13 @@
     width: 6vw;
     height: 6vw;
     margin: .1vw;
-
 }
 
 #equals {
     width: 6vw;
     height: 12vw;
+    float: right;
+    margin-left: -0.1vw;
 }
 
 #display {
