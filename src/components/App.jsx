@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Display from './Display';
 import KeyPads from './KeyPads';
+import './App.css';
 
 class App extends Component {
     constructor(props) {
@@ -311,11 +312,6 @@ class App extends Component {
 
         }
 
-
-
-        expToString = '(135+9^2+15%)\u{00f7}(17-3\u{00d7}(4^3-\u{221a}15))+30%-921\u{00f7}4';
-        console.log(expToString);
-
         if (/\(/.test(expToString)) {
             expToString = calculateParenthesis(expToString);
         }
@@ -381,7 +377,7 @@ class App extends Component {
 
     render() {
         return (
-            <div>
+            <div id='calculator'>
                 <Display
                     expression={this.state.expression}
                     result={this.state.result}

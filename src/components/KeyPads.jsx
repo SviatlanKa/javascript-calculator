@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './App.css';
 // import { FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 // import { faBackspace} from "@fortawesome/free-solid-svg-icons";
 
