@@ -21,7 +21,7 @@ export const CALC_PADS = [
     },
     {
         id: "backspace",
-        text: "\u{2190}",
+        text: "",
         type: "service"
     },
     {

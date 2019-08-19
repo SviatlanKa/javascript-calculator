@@ -10,12 +10,11 @@
     left: 50%;
     transform: translate(-50%, -50%);
     margin: 0 auto;
-    width: 31vw;
+    width: 370px;
     height: max-content;
     display: flex;
     flex-direction: column;
-    background-color: #353535;
-    /*border: solid 2px darkgray;*/
+    background-color: #616161;
 }
 
 #keypads {
@@ -24,14 +23,14 @@
     justify-content: space-around;
 }
 .pad {
-    width: 6vw;
-    height: 6vw;
-    margin: .1vw;
+    width: 70px;
+    height: 70px;
+    margin: 2px;
     outline: none;
     border-radius: 5px;
     background: rgb(0,0,0);
-    background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(32,32,32,1) 50%, rgba(49,49,49,1) 100%);
-    border-color: #D6DBDF;
+    background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(37,37,37,1) 50%, rgba(49,49,49,1) 100%);
+    border: solid 1px #D6DBDF;
 }
 
 #clear, #backspace {
@@ -43,8 +42,7 @@
 }
 
 #equals {
-    width: 6vw;
-    height: 12.2vw;
+    height: 144px;
     float: right;
 }
 
@@ -53,22 +51,22 @@
 }
 
 #expression {
+    font-size: 1.3rem;
     min-height: 1.5rem;
-    padding: 2px 1px;
-    white-space: pre-line;
-    /*hyphens: auto;*/
+    margin: .15rem;
+    overflow-wrap: break-word;
     text-align: left;
 }
 
 #input {
     font-size: 1rem;
-    padding: 2px 1px;
+    margin: .15rem .15rem 0 .15rem;
     text-align: right;
 }
 
 #expression, #input {
-    margin: .15rem;
-    padding: 2px 1px;
+
+    padding: 5px;
     border-radius: 3px;
     border: solid 1px #D6DBDF;
     background-color: #000000;

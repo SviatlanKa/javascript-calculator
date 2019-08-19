@@ -32,7 +32,12 @@ class App extends Component {
             expression = [];
             isEqual = false;
         }
-        if (expression.length > 0 || (expression.length === 0 && key.id !== 'zero')) {
+        if (key.id === 'zero') {
+            if ((expression.length === 1 && expression[0] !== '0') || expression.length > 1 || expression.length === 0) {
+                expression.push(key.text);
+                result = key.text;
+            }
+        } else {
             expression.push(key.text);
             result = key.text;
         }
@@ -86,7 +91,7 @@ class App extends Component {
         if (expression.length > 0 && !/[\u221a]\d+\.?\d*(e[-+]\d+)?$/.test(expToString) && /\d+\.?\d*(e[-+]\d+)?$/.test(expToString)) {
             const index = expToString.match(/\d+\.?\d*$/).index;
             if (isEqual) {
-                result.splice(0, 0, '-');
+                result[0] !== '-' ? result.splice(0, 0, '-') : result.splice(0, 1);
                 isEqual = false;
             } else if (expression[index - 1] === '-' &&
                 (index - 1 === 0 || /[\u00f7\u00d7+-]/.test(expression[index - 2]))) {
@@ -105,8 +110,10 @@ class App extends Component {
                 expression = [];
                 isEqual = false;
             }
-            expression.push('(');
-            result = '(';
+            if (/[\u00f7\u00d7+-]$/.test(expToString) || expression.length === 0) {
+                expression.push('(');
+                result = '(';
+            }
         } else if (key.id === 'right-parenthesis') {
             if (expression.length === 0 || /[\u00f7\u00d7+-]$/.test(expToString)) {
                 alert('Wrong expression');
@@ -147,7 +154,7 @@ class App extends Component {
         if (isEqual) {
             isEqual = false;
         }
-        if (expression.length > 0 && /-?\d+\.?\d*(e[-+]\d+)?$/.test(expToString)) {
+        if (expression.length > 0 && /-?\d+\.?\d*(e[-+]\d+)?\)?$/.test(expToString)) {
             expression.push('^');
             result = '^';
         } else alert('Wrong expression');

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-// import { FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-// import { faBackspace} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { faBackspace} from "@fortawesome/free-solid-svg-icons";
 
 class KeyPads extends Component {
     constructor(props) {
@@ -18,7 +18,18 @@ class KeyPads extends Component {
         const pads = [];
         let count = 1;
         this.props.data.forEach(pad => {
-            pads.push(
+            if (pad.id === 'backspace') {
+                pads.push(<button
+                    id={pad.id}
+                    className="pad"
+                    key={`pad-${count}`}
+                    onClick={this.handleClick}
+                >
+                    {/*<FontAwesomeIcon icon={faBackspace} className="icon" style={"color: red"}/>*/}
+                    {pad.text}
+                </button>)
+            } else {
+                pads.push(
                 <button
                     id={pad.id}
                     className="pad"
@@ -28,6 +39,7 @@ class KeyPads extends Component {
                     {pad.text}
                 </button>
             );
+            }
             count++;
         })
         return(
