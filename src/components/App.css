@@ -2,7 +2,6 @@
 * {
     font-family: 'Roboto', sans-serif;
     font-size: 1.5rem;
-    color: #ffffff;
 }
 #calculator {
     position: fixed;
@@ -32,8 +31,12 @@
     background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(37,37,37,1) 50%, rgba(49,49,49,1) 100%);
     border: solid 1px #D6DBDF;
 }
+.pad, #display {
+    color: white;
+}
 
-#clear, #backspace {
+
+#clear {
     color: red;
 }
 
@@ -65,7 +68,6 @@
 }
 
 #expression, #input {
-
     padding: 5px;
     border-radius: 3px;
     border: solid 1px #D6DBDF;

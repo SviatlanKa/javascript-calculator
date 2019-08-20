@@ -25,7 +25,7 @@ class KeyPads extends Component {
                     key={`pad-${count}`}
                     onClick={this.handleClick}
                 >
-                    {/*<FontAwesomeIcon icon={faBackspace} className="icon" style={"color: red"}/>*/}
+                    <FontAwesomeIcon icon={faBackspace} className="icon" color="red"/>
                     {pad.text}
                 </button>)
             } else {
