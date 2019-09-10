@@ -73,3 +73,7 @@
     border: solid 1px #D6DBDF;
     background-color: #000000;
 }
+
+.icon {
+    pointer-events: none;
+}

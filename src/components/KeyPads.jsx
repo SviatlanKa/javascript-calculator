@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import './App.css';
 import { FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faBackspace} from "@fortawesome/free-solid-svg-icons";
+import './App.css';
 
 class KeyPads extends Component {
     constructor(props) {
@@ -11,39 +11,27 @@ class KeyPads extends Component {
 
     handleClick(event){
         const pressedKey = this.props.data.filter(pad => pad.id === event.target.id)[0];
-        console.log(`pressedKey: ${pressedKey}`);
         this.props.onHandleClick(pressedKey);
     }
 
     render() {
         const pads = [];
         let count = 1;
+        let padIcon;
         this.props.data.forEach(pad => {
-            if (pad.id === 'backspace') {
-                pads.push(
-                    <button
-                    id={pad.id}
-                    className="pad"
-                    key={`pad-${count}`}
-                    onClick={this.handleClick}
-                >
-                    <FontAwesomeIcon icon={faBackspace} className="icon" color="red"/>
-                </button>)
-            } else {
-                pads.push(
-                <button
-                    id={pad.id}
-                    className="pad"
-                    key={`pad-${count}`}
-                    onClick={this.handleClick}
-                >
-                    {pad.text}
-                </button>
-                );
-            }
+            padIcon = (pad.id === 'backspace')? <FontAwesomeIcon icon={faBackspace} className="icon" color="red"/> : pad.text;
+            pads.push(
+            <button
+                id={pad.id}
+                className="pad"
+                key={`pad-${count}`}
+                onClick={this.handleClick}
+            >
+                {padIcon}
+            </button>
+            );
             count++;
         });
-        console.log(pads);
         return(
             <div id="keypads">
                 {pads}

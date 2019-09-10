@@ -27,7 +27,6 @@ class App extends Component {
 
     addDigit(key) {
         let { expression, result, isEqual } = this.state;
-        console.log(`expr: ${expression}, res: ${result}`);
 
         if (isEqual) {
             expression = [];
@@ -36,7 +35,7 @@ class App extends Component {
         if (key.id === 'zero' && /\u00f7$/.test(expression)) {
             alert('Division by zero!');
         } else {
-            if (expression.length === 1 && expression[0] === '0' || expression.length === 0) {
+            if ((expression.length === 1 & expression[0] === '0') | expression.length === 0) {
                 expression[0] = key.text;
                 result = key.text;
             } else {
@@ -45,8 +44,6 @@ class App extends Component {
                     result += key.text;
                 } else result = key.text;
             }
-            console.log(result);
-
         }
         this.setState({ expression, result, isEqual });
     }
@@ -188,10 +185,17 @@ class App extends Component {
     }
 
     deleteChar() { //It works correct!!
-        let { expression } = this.state;
+        let { expression, result } = this.state;
+        let expressionToStr;
         expression.pop();
-        console.log(`expression from deleteChar: ${expression}`);
-        this.setState({ expression });
+        if (expression.length === 0) {
+            result = '0';
+        } else {
+            expressionToStr = expression.join('');
+            let regEx = /\d+\.?\d*(e[-+]\d+)?$/;
+            result = regEx.test(expressionToStr) ? expressionToStr.match(regEx) : expressionToStr[expressionToStr.length - 1];
+        }
+        this.setState({ expression, result });
     }
 
     clearAll() { //It works correct!!
@@ -286,34 +290,30 @@ class App extends Component {
             return calculateExpression(exp);
         }
 
-        const calculateParenthesis = exp => {
-            if (/\)/.test(exp)) {
-                let partOfExp, resultOfCalc;
-                let beginSlice, endSlice;
+        // const calculateParenthesis = exp => {
+        //     if (/\(/.test(expToString)) {
+        //         const rightParenthesis = expToString.match(/\)/g);
+        //         console.log(Boolean(rightParenthesis));
+        //         const leftParenthesis = expToString.match(/\(/g);
+        //         if (Boolean(rightParenthesis) && leftParenthesis.length > rightParenthesis.length) {
+        //             alert("Wrong expression! Check the number of '('");
+        //         }
+        //     }
+        //         if (/\)/.test(exp)) {
+        //             let partOfExp, resultOfCalc;
+        //             let beginSlice, endSlice;
+        //
+        //             while (/\)/.test(exp)) {
+        //                 endSlice = exp.indexOf(')');
+        //                 beginSlice = exp.lastIndexOf('(', endSlice) + 1;
+        //                 partOfExp = exp.slice(beginSlice, endSlice);
+        //                 resultOfCalc = (/%/.test(partOfExp)) ? calculatePercent(partOfExp) : calculateExpression(partOfExp);
+        //                 exp = exp.replace(`(${partOfExp})`, resultOfCalc);
+        //             }
+        //             return exp;
+        //         } else alert('Unfinished expression');
+        // }
 
-                while (/\)/.test(exp)) {
-                    endSlice = exp.indexOf(')');
-                    beginSlice = exp.lastIndexOf('(', endSlice) + 1;
-                    partOfExp = exp.slice(beginSlice, endSlice);
-                    resultOfCalc = (/%/.test(partOfExp)) ? calculatePercent(partOfExp) : calculateExpression(partOfExp);
-                    exp = exp.replace(`(${partOfExp})`, resultOfCalc);
-                }
-                return exp;
-            } else alert('Unfinished expression');
-
-        }
-
-        if (/\(/.test(expToString)) {
-            let temp = expToString.match(/\(/).length;
-            console.log(`temp: ${temp}`);
-            try {
-                if (expToString.match(/\(/g).length > expToString.match(/\)/g).length) {
-                alert("Wrong expression! Check the number of '('");
-                } else expToString = calculateParenthesis(expToString);
-            } catch {
-                alert("Wrong expression! Check the number of '('");
-            }
-        }
         if (/%/.test(expToString)) {
             expToString = calculatePercent(expToString)
         }
@@ -326,7 +326,6 @@ class App extends Component {
     }
 
     handleClick(key) {
-        console.log(`type: ${key.type}, key.id: ${key.id}`);
         if (key.type === 'digit') {
             this.addDigit(key);
         } else if (key.type === 'sign') {
