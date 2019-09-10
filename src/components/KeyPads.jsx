@@ -11,6 +11,7 @@ class KeyPads extends Component {
 
     handleClick(event){
         const pressedKey = this.props.data.filter(pad => pad.id === event.target.id)[0];
+        console.log(`pressedKey: ${pressedKey}`);
         this.props.onHandleClick(pressedKey);
     }
 
@@ -19,14 +20,14 @@ class KeyPads extends Component {
         let count = 1;
         this.props.data.forEach(pad => {
             if (pad.id === 'backspace') {
-                pads.push(<button
+                pads.push(
+                    <button
                     id={pad.id}
                     className="pad"
                     key={`pad-${count}`}
                     onClick={this.handleClick}
                 >
                     <FontAwesomeIcon icon={faBackspace} className="icon" color="red"/>
-                    {pad.text}
                 </button>)
             } else {
                 pads.push(
@@ -38,10 +39,11 @@ class KeyPads extends Component {
                 >
                     {pad.text}
                 </button>
-            );
+                );
             }
             count++;
-        })
+        });
+        console.log(pads);
         return(
             <div id="keypads">
                 {pads}

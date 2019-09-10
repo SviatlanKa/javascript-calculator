@@ -53,7 +53,7 @@ class App extends Component {
 
     addMathSign(key) {
         let { expression, result, isEqual } = this.state;
-        const expToString = expression.join('');
+        let expToString = expression.join('');
         if(key.text === '-') {
             expression.push(key.text);
             result = key.text;
@@ -61,12 +61,12 @@ class App extends Component {
             if (expression.length === 0) {
                 alert('Wrong expression');
             } else {
-                if (/[\u00f7\u00d7+]$/.test(expToString)) {
-                    this.deleteChar();
-                    expression = this.state.expression;
+                while(/[\u00f7\u00d7+-]$/.test(expToString)) {
+                    expression.pop();
+                    expToString = String(expression.join(''));
                 }
-                    expression.push(key.text);
-                    result = key.text;
+                expression.push(key.text);
+                result = key.text;
             }
         }
         isEqual = isEqual? !isEqual : isEqual;
@@ -120,7 +120,7 @@ class App extends Component {
                 expression = [];
                 isEqual = false;
             }
-            if (/[\u00f7\u00d7+-]$/.test(expToString) || expression.length === 0) {
+            if (/[(\u00f7\u00d7+-]$/.test(expToString) || expression.length === 0) {
                 expression.push('(');
                 result = '(';
             }
@@ -190,6 +190,7 @@ class App extends Component {
     deleteChar() { //It works correct!!
         let { expression } = this.state;
         expression.pop();
+        console.log(`expression from deleteChar: ${expression}`);
         this.setState({ expression });
     }
 
@@ -303,7 +304,15 @@ class App extends Component {
         }
 
         if (/\(/.test(expToString)) {
-            expToString = calculateParenthesis(expToString);
+            let temp = expToString.match(/\(/).length;
+            console.log(`temp: ${temp}`);
+            try {
+                if (expToString.match(/\(/g).length > expToString.match(/\)/g).length) {
+                alert("Wrong expression! Check the number of '('");
+                } else expToString = calculateParenthesis(expToString);
+            } catch {
+                alert("Wrong expression! Check the number of '('");
+            }
         }
         if (/%/.test(expToString)) {
             expToString = calculatePercent(expToString)
@@ -317,6 +326,7 @@ class App extends Component {
     }
 
     handleClick(key) {
+        console.log(`type: ${key.type}, key.id: ${key.id}`);
         if (key.type === 'digit') {
             this.addDigit(key);
         } else if (key.type === 'sign') {
