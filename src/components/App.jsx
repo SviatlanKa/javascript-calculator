@@ -8,7 +8,7 @@ class App extends Component {
         super(props);
         this.state = {
             expression: [],
-            result: ['0'],
+            result: '0',
             isEqual: false
         }
         this.handleClick = this.handleClick.bind(this);
@@ -25,62 +25,71 @@ class App extends Component {
         this.calculate = this.calculate.bind(this);
     }
 
-    addDigit(key) { //It works correct!!
+    addDigit(key) {
         let { expression, result, isEqual } = this.state;
+        console.log(`expr: ${expression}, res: ${result}`);
 
         if (isEqual) {
             expression = [];
-            isEqual = false;
+            isEqual = !isEqual;
         }
-        if (key.id === 'zero') {
-            if (/\u00f7$/.test(expression)) {
-                alert('Division by zero!');
-            } else if ((expression.length === 1 && expression[0] !== '0') || expression.length > 1 || expression.length === 0) {
-                expression.push(key.text);
-                result = key.text;
-            }
+        if (key.id === 'zero' && /\u00f7$/.test(expression)) {
+            alert('Division by zero!');
         } else {
-            expression.push(key.text);
-            result = key.text;
+            if (expression.length === 1 && expression[0] === '0' || expression.length === 0) {
+                expression[0] = key.text;
+                result = key.text;
+            } else {
+                expression.push(key.text);
+                if(/(\d+|\.)$/.test(result)) {
+                    result += key.text;
+                } else result = key.text;
+            }
+            console.log(result);
+
         }
         this.setState({ expression, result, isEqual });
     }
 
-    addMathSign(key) {//It works correct!!
+    addMathSign(key) {
         let { expression, result, isEqual } = this.state;
         const expToString = expression.join('');
-
-        if (expression.length === 0) {
-            alert('Wrong expression');
-        } else {
-            if (isEqual) {
-                isEqual = false;
-            } else if (/[\u00f7\u00d7+-]$/.test(expToString)) {
-                this.deleteChar();
-                expression = this.state.expression;
-            }
+        if(key.text === '-') {
             expression.push(key.text);
             result = key.text;
+        } else {
+            if (expression.length === 0) {
+                alert('Wrong expression');
+            } else {
+                if (/[\u00f7\u00d7+]$/.test(expToString)) {
+                    this.deleteChar();
+                    expression = this.state.expression;
+                }
+                    expression.push(key.text);
+                    result = key.text;
+            }
         }
+        isEqual = isEqual? !isEqual : isEqual;
         this.setState({ expression, result, isEqual });
     }
 
-    addDecimal() {//It works correct!!
+    addDecimal() {
         let { expression, result, isEqual } = this.state;
         const expToString = expression.join('');
 
         if (isEqual) {
-            if (!/\d+\.\d*$/.test(expToString)){
+            if (!/\./.test(expToString)){
                 expression.push('.');
-                result = '.';
+                result += '.';
             }
-            isEqual = false;
-        } else if (expression.length === 0) {
-            expression = ['0', '.'];
-            result = '.';
-        } else if (!/\.$|(\d+\.\d*$)/.test(expToString)) {
+            isEqual = !isEqual;
+        } else if (expression.length === 0 || /[\u00f7\u00d7+-]/.test(result)) {
+            expression.push('0');
+            expression.push('.');
+            result = '0.';
+        } else if (!/\.|[^\d]$/.test(result)) {
                 expression.push('.');
-                result = '.';
+                result += '.';
         }
         this.setState( {expression, result, isEqual });
     }
