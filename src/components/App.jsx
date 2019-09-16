@@ -129,7 +129,7 @@ class App extends Component {
                 result = '(';
             }
         } else if (key.id === 'right-parenthesis') {
-            if (expression.length === 0 || new RegExp(`${mathSigsRE}$`).test(expToStr)) {
+            if (expression.length === 0 || new RegExp(`${mathSigsRE}$`).test(expToStr) || (/\($/).test(expToStr)) {
                 alert('Wrong expression');
             } else {
                 expression.push(')');
